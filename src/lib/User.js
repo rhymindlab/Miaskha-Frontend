@@ -18,6 +18,7 @@ export async function loginUser({email,setEmail,password,setPassword,setShowLogi
         });
         
         const data = await response.json()
+        console.log(data);
 
         setUser(data);
 
