@@ -5,7 +5,7 @@
 import { useState } from "react";
 
 import FilterPanel from "./filterpanel";
-import CategoryFilterPanel from "./categroyfilter";
+// import CategoryFilterPanel from "./categroyfilter";
 import { useParams } from "react-router-dom";
 
 export default function Filters({onApply, products = [], forFilter= [], searchParams, setSearchParams}) {

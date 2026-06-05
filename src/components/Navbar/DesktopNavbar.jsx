@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import CartIcon from "../cart/cartIcon";
-import WishlistIcon from "../wishlistIcon/WislistIcon";
+// import WishlistIcon from "../wishlistIcon/WislistIcon";
 import Login from "../login";
 import LoggedInIcon from "../loggedInIcon";
 import Signup from "../signUp";

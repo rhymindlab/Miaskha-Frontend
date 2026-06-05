@@ -1,6 +1,6 @@
 import React from "react";
 import CartIcon from "../cart/cartIcon";
-import WishlistIcon from "../wishlistIcon/WislistIcon";
+// import WishlistIcon from "../wishlistIcon/WislistIcon";
 
 
 export default function MobileNavbar({ setOpen }) {
