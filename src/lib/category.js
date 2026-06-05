@@ -1,6 +1,5 @@
 export async function handleCategoryFilter(slug, searchParams) {
-  const base =
-    import.meta.env.BACKEND_API_URL || "http://localhost:8000";
+  const base = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
 
   const url = `${base}/product/category/${slug}?${searchParams.toString()}`;
 
@@ -12,8 +11,7 @@ export async function handleCategoryFilter(slug, searchParams) {
 }
 
 export async function handleCategoryFilterData(slug) {
-  const base =
-    import.meta.env.BACKEND_API_URL || "http://localhost:8000";
+  const base = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
 
   const url = `${base}/category/filter/${slug}`;
 

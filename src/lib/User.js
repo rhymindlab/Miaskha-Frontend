@@ -4,7 +4,7 @@ import { afterLoginSync } from "../utils/cart-functions";
 export async function loginUser({email,setEmail,password,setPassword,setShowLogin,setLoggedIn,setUser,user}) {
     
     try {
-        const BASE_URL = import.meta.env.BACKEND_API_URL || "http://localhost:8000";
+        const BASE_URL = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
         const response = await fetch(`${BASE_URL}/user/login`, {
             method: "POST",
             headers: {
@@ -51,7 +51,7 @@ export async function loginUser({email,setEmail,password,setPassword,setShowLogi
 
 export async function logoutUser(){
     try {
-        const BASE_URL = import.meta.env.BACKEND_API_URL || "http://localhost:8000";
+        const BASE_URL = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
         const response = await fetch(`${BASE_URL}/logout`,
             {
                 method: "GET",
@@ -71,7 +71,7 @@ export async function logoutUser(){
 export function checkLogin(setLoggedIn, setUser) {
 
     try {
-        const BASE_URL = import.meta.env.BACKEND_API_URL || "http://localhost:8000";
+        const BASE_URL = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
 
         async function doFetch(path,) {
         
@@ -113,7 +113,7 @@ export async function signupUser({
   setUser,
 }) {
   try {
-    const BASE_URL = import.meta.env.BACKEND_API_URL || "http://localhost:8000";
+    const BASE_URL = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
 
     const response = await fetch(`${BASE_URL}/user/signup`,
       {

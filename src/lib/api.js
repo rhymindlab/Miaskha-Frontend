@@ -1,5 +1,5 @@
 export async function fetchAllProductsCategoryCollectionsMetalRates() {
-    const base = import.meta.env.BACKEND_API_URL || "http://localhost:8000";
+    const base = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
     async function doFetch(path) {
         
         const url = `${base.replace(/\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`;
