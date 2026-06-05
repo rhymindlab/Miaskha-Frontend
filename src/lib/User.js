@@ -18,25 +18,30 @@ export async function loginUser({email,setEmail,password,setPassword,setShowLogi
         });
         
         const data = await response.json()
-        console.log(data);
-
-        setUser(data);
-
-
-        if (response.ok) {
+        console.log('data', data)
+        
+        if (data.success) {
+            const profileResponse = await fetch(`${BASE_URL}/profile`,
+                {
+                    credentials: "include",
+                }
+            );
+            const userData = await profileResponse.json();
+            console.log('userData',userData)
+            setUser(userData);
             
             alert("Login Successful");
             
             setShowLogin(false);
             setLoggedIn(true);
 
-            await afterLoginSync(user);
+            await afterLoginSync(userData);
             
-            return(data)
+            return(userData)
 
         } else {
 
-            alert(data.message);
+            alert(userData.message);
 
         }
 
