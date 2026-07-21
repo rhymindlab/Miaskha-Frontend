@@ -5,9 +5,7 @@ import CollectionGrid from "../Collections/collectionGrid";
 
 export default function CollectionClient({ intialCollections = [] }) {
   // Accept either an array or an object containing a collections array.
-  const collections = Array.isArray(intialCollections)
-    ? intialCollections
-    : (intialCollections?.collections ?? []);
+  const collections = Array.isArray(intialCollections) ? intialCollections : (intialCollections?.collections ?? []);
 
   // const [collections, setCollections] = useState(initial);
 
