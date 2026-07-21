@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import logo from "../../assets/logo.png";
 import CartIcon from "../cart/cartIcon";
 // import WishlistIcon from "../wishlistIcon/WislistIcon";
 import Login from "../login";
@@ -12,17 +13,38 @@ export default function DesktopNavbar(loggedIn, setLoggedIn) {
   
   
   return (
-    <div className="hidden lg:flex mx-auto max-w-6xl px-4 items-center justify-between h-16">
+    <div className="hidden lg:flex mx-auto max-w-6xl px-4 items-center justify-between h-19">
+      <nav className="flex items-center justify-between w-full gap-4">
 
-      <a href="/" className="text-lg font-semibold text-gray-900">
-        Miashka Diamonds
+      <a href="/" className="flex items-center overflow-visible">
+          <img
+            src={logo}
+            alt="MIASHKA Logo"
+            className="h-30 w-auto object-contain scale-125"
+          />
       </a>
 
-      <nav className="flex items-center gap-4">
+        <div className="flex-1 flex items-center justify-center gap-8">
 
-        <a href="/jewellery">
-          Jewellery
+        <a href="/collections">
+          COLLECTIONS
         </a>
+        <a href="/jewellery">
+          GIFTING
+        </a>
+        <a href="/journal">
+          JOURNAL
+        </a>
+        <a href="/about">
+          ABOUT
+        </a>
+        <a href="/contact">
+          CONTACT
+        </a>
+        <a href="/jewellery">
+          JEWELLERY
+        </a>
+        </div>
 
         {/* <WishlistIcon /> */}
         <CartIcon />
