@@ -69,7 +69,7 @@ export default function HomePage() {
   return (
     <>
     <div>
-      <section className="relative h-[500px] overflow-hidden">
+      <section className="relative h-screen overflow-hidden">
         <a href="/jewellery">
           {slides.map((slide, index) => (
             <div

@@ -16,15 +16,15 @@ export default function ProductBar({
           key={index}
           title={parent.name}
           items={childCategories.filter(child => child?.parentCategory === parent._id)}
-          titleLink={`/Jewellery/category/${parent.slug}`}
-          itemsLink="/Jewellery/category"
+          titleLink={`/Jewellery?category=${parent.slug}`}
+          itemsLink="/Jewellery?category="
           
         />
 
       ))}
 
-      <DropdownMenu title="Collections" items={collections} titleLink={`/Collections`}
-      />
+      {/* <DropdownMenu title="Collections" items={collections} titleLink={`/Collections`}
+      /> */}
 
     </div>
 

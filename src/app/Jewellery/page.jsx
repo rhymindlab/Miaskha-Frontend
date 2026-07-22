@@ -1,62 +1,98 @@
-import React, {useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import { getAllProducts, getMetalRates } from "../../lib/api";
+import {
+    fetchAllProductsCategoryCollectionsMetalRates
+} from "../../lib/api";
+
 import AllProducts from "../../components/allProducts";
 
 export default function JewelleryPage() {
 
-  const [products, setProducts] = useState([]);
-  const [metalData, setMetalData] = useState([]);
+    const [products, setProducts] = useState([]);
 
-  const [loading, setLoading] = useState(true);
+    const [collections, setCollections] = useState([]);
 
-  useEffect(() => {
+    const [categories, setCategories] = useState([]);
 
-  async function loadData() {
+    const [metalData, setMetalData] = useState([]);
 
-    try {
+    const [loading, setLoading] = useState(true);
 
-      const [productsData, metalRatesData] = await Promise.all([
-        getAllProducts(),
-      
-        getMetalRates()
-      ]);
-      console.log(productsData)
+    useEffect(() => {
 
-      setProducts(productsData);
-      setMetalData(metalRatesData);
+        async function loadData() {
 
-    } catch (error) {
+            try {
 
-      console.error(error);
+                const {
 
-    } finally {
+                    products,
 
-      setLoading(false);
+                    collections,
+
+                    categories,
+
+                    metalRates
+
+                } =
+                    await fetchAllProductsCategoryCollectionsMetalRates();
+
+                setProducts(products);
+
+                setCollections(collections);
+
+                setCategories(categories);
+
+                setMetalData(metalRates);
+
+            }
+
+            catch (err) {
+
+                console.log(err);
+
+            }
+
+            finally {
+
+                setLoading(false);
+
+            }
+
+        }
+
+        loadData();
+
+    }, []);
+
+    if (loading) {
+
+        return (
+
+            <div className="py-10 text-center">
+
+                Loading Products...
+
+            </div>
+
+        );
 
     }
 
-  }
-
-  loadData();
-
-  }, []);
-
-  
-  
-
-  if (loading) {
-
     return (
-      <div className="py-6">
-        Loading products...
-      </div>
+
+        <AllProducts
+
+            initialProducts={products}
+
+            collections={collections}
+
+            categories={categories}
+
+            metalData={metalData}
+
+        />
+
     );
-
-  }
-
-  return (
-    <AllProducts initialProducts={products} metalData={metalData} />
-  );
 
 }

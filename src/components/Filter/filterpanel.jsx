@@ -1,4 +1,5 @@
 "use client";
+import { getFilteredProducts } from "../../lib/api";
 
 import { useSearchParams, } from "react-router-dom";
 
@@ -10,9 +11,20 @@ import { filterdata }from "../../utils/FilterData";
 
 export default function FilterPanel({ open, setOpen, onApply, sidebar = false, intialproducts = [], forFilterData = [],searchParams, setSearchParams}) {
 
-  const [products, setProducts] = useState(intialproducts);
+  const updatedFilter = {
 
-  const updatedFilter = {...filterdata, collections: forFilterData? forFilterData : filterdata.collections}
+    Price: filterdata.Price,
+
+    category:
+
+        forFilterData.category || [],
+
+    collection:
+
+        forFilterData.collections || []
+
+};
+
   console.log(forFilterData)
 
   
@@ -84,73 +96,120 @@ export default function FilterPanel({ open, setOpen, onApply, sidebar = false, i
 
   // FILTER PRODUCTS
 
-  const filteredProducts = products.filter(product => {
-
-      return Object.keys(updatedFilter).every(key => {
-
-          const selected = searchParams?.getAll(key);
-
-          // NO FILTER
-
-          if (
-            selected?.length === 0
-          ) {
-            return true;
-          }
-
-          const value = product[key];
-
-          // ARRAY FIELD
-
-          if (
-            Array.isArray(value)
-          ) {
-
-            return value.some(item =>
-              selected.includes(item)
-            );
-
-          }
-
-          // NORMAL FIELD
-
-          return selected?.includes(
-            value
-          );
-
-        });
-
-    });
+  
 
   // AUTO APPLY DESKTOP
-
   useEffect(() => {
 
-    if (sidebar && onApply) {
+    async function loadProducts() {
 
-      onApply(filteredProducts);
+        try {
+
+            const filters = {};
+
+            searchParams.forEach((value, key) => {
+
+                if (filters[key]) {
+
+                    if (Array.isArray(filters[key])) {
+
+                        filters[key].push(value);
+
+                    }
+
+                    else {
+
+                        filters[key] = [
+
+                            filters[key],
+
+                            value
+
+                        ];
+
+                    }
+
+                }
+
+                else {
+
+                    filters[key] = value;
+
+                }
+
+            });
+
+            const data =
+
+                await getFilteredProducts(filters);
+
+            onApply(data);
+
+        }
+
+        catch (err) {
+
+            console.log(err);
+
+        }
 
     }
 
-  }, [searchParams]);
+    loadProducts();
+
+}, [searchParams]);
 
   // MOBILE APPLY
 
-  function applyFilters() {
+  async function applyFilters() {
 
-    if (onApply) {
+    const filters = {};
 
-      onApply(filteredProducts);
+    searchParams.forEach((value, key) => {
+
+        if (filters[key]) {
+
+            if (Array.isArray(filters[key])) {
+
+                filters[key].push(value);
+
+            }
+
+            else {
+
+                filters[key] = [
+
+                    filters[key],
+
+                    value
+
+                ];
+
+            }
+
+        }
+
+        else {
+
+            filters[key] = value;
+
+        }
+
+    });
+
+    const products =
+
+        await getFilteredProducts(filters);
+
+    onApply(products);
+
+    if (!sidebar) {
+
+        setOpen(false);
 
     }
 
-    if (!sidebar && setOpen) {
-
-      setOpen(false);
-
-    }
-
-  }
+}
 
   const mobileClasses = `fixed inset-0 bg-white z-50 flex flex-col transition-transform duration-300
     ${

@@ -50,7 +50,7 @@ export default function DropdownMenu({
 
           <a
             key={index}
-            href= {`/${itemsLink.replace(/^\/+/, "")}/${item.slug}`}
+            href= {`/${itemsLink.replace(/^\/+/, "")}${item.slug}`}
             className="
               block
               py-2

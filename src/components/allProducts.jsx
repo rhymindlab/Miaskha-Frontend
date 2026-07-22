@@ -1,49 +1,85 @@
-// components/Jewellery/jewellery-client.jsx
-
-"use client";
-
-import {useState} from "react";
-
-import ProductGrid from "./ProductGrid/product-grid";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import BreadCrumbs from "./breadcrumbs";
+import Filters from "./Filter/filters";
+import ProductGrid from "./ProductGrid/product-grid";
 
+export default function AllProducts({
+    initialProducts = [],
+    collections = [],
+    categories = [],
+    metalData = [],
+    forBreadCrumbs = []
+}) {
 
-export default function AllProducts({ initialProducts = [], metalData= [], forBreadCrumbs=[]}) {
+    const [products, setProducts] = useState(initialProducts);
 
-  const [products, setProducts] = useState(initialProducts);
+    const [searchParams, setSearchParams] = useSearchParams();
 
-  return (
+    useEffect(() => {
+        setProducts(initialProducts);
+    }, [initialProducts]);
 
-    <div className="w-full">
+    return (
+        <div className="w-full">
 
-      {/* DESKTOP */}
+            {/* ---------------- MOBILE ---------------- */}
 
-      <div className=" hidden lg:block h-screen overflow-hidden">
+            <div className="block lg:hidden">
 
-        {/* PRODUCTS */}
+                <BreadCrumbs
+                    forBreadCrumbs={forBreadCrumbs}
+                />
 
-        <div className=" w-full h-full overflow-y-auto p-2 ">
+                <Filters
+                    onApply={setProducts}
+                    products={products}
+                    collections={collections}
+                    categories={categories}
+                    searchParams={searchParams}
+                    setSearchParams={setSearchParams}
+                />
 
-          <div className="p-2"> <BreadCrumbs forBreadCrumbs={forBreadCrumbs} /> </div>
+                <ProductGrid
+                    products={products}
+                    metalData={metalData}
+                />
 
-          <ProductGrid products={products} metalData={metalData}/>
+            </div>
+
+            {/* ---------------- DESKTOP ---------------- */}
+
+            <div className="hidden lg:flex h-screen overflow-hidden">
+
+                <div className="w-72 border-r overflow-y-auto">
+
+                    <Filters
+                        onApply={setProducts}
+                        products={products}
+                        collections={collections}
+                        categories={categories}
+                        searchParams={searchParams}
+                        setSearchParams={setSearchParams}
+                    />
+
+                </div>
+
+                <div className="flex-1 overflow-y-auto">
+
+                    <BreadCrumbs
+                        forBreadCrumbs={forBreadCrumbs}
+                    />
+
+                    <ProductGrid
+                        products={products}
+                        metalData={metalData}
+                    />
+
+                </div>
+
+            </div>
 
         </div>
-
-      </div>
-
-      {/* MOBILE */}
-
-      <div className=" lg:hidden p-5 ">
-
-        <div className="p-2"> <BreadCrumbs forBreadCrumbs={forBreadCrumbs}/> </div>
-
-        <ProductGrid products={products} metalData={metalData}/>
-
-      </div>
-
-    </div>
-
-  );
+    );
 }

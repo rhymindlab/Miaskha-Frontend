@@ -1,71 +1,139 @@
-// components/Filter/filters.jsx
-
 "use client";
 
 import { useState } from "react";
 
 import FilterPanel from "./filterpanel";
-// import CategoryFilterPanel from "./categroyfilter";
-import { useParams } from "react-router-dom";
 
-export default function Filters({onApply, products = [], forFilter= [], searchParams, setSearchParams}) {
+export default function Filters({
 
-  const [open, setOpen] = useState(false);
-  const { slug } = useParams();
+    onApply,
 
-  return (
+    products = [],
 
-    <>
+    collections = [],
 
-      {/* MOBILE BAR */}
+    categories = [],
 
-      <div className="
-        flex
-        border
-        border-black
-        lg:hidden
-        w-full
-      ">
+    searchParams,
 
-        <button
-          className="
-            flex-1
-            py-2
-            hover:bg-black
-            hover:text-white
-            transition-all
-          "
-        >
-          Sort
-        </button>
+    setSearchParams
 
-        <button className=" flex-1 py-2 hover:bg-black hover:text-white transition-all"
+}) {
 
-          onClick={() => setOpen(true)}
-        >
-          Filter
-        </button>
+    const [open, setOpen] = useState(false);
 
-      </div>
+    /*
+    Build filter data dynamically
+    */
 
-      {/* DESKTOP */}
+    const filterData = {
 
-      <div className=" hidden lg:block w-full ">
+        collections:
 
-        <FilterPanel sidebar={true} onApply={onApply} intialproducts={products} forFilterData={forFilter} searchParams={searchParams} setSearchParams={setSearchParams}/>
-        {/* <CategoryFilterPanel filter={forFilter} /> */}
+            collections.map(item => item.slug),
 
-      </div>
+        category:
 
-      {/* MOBILE */}
+            categories.map(item => item.slug)
 
-      <div className="lg:hidden">
+    };
 
-        {/* <FilterPanel open={open} setOpen={setOpen} onApply={onApply} intialproducts={products} forFilterData={forFilter} /> */}
+    return (
 
-      </div>
+        <>
 
-    </>
+            {/* MOBILE BAR */}
 
-  );
+            <div
+                className="
+                    flex
+                    border
+                    border-black
+                    lg:hidden
+                    w-full
+                "
+            >
+
+                <button
+                    className="
+                        flex-1
+                        py-2
+                        hover:bg-black
+                        hover:text-white
+                    "
+                >
+                    Sort
+                </button>
+
+                <button
+
+                    className="
+                        flex-1
+                        py-2
+                        hover:bg-black
+                        hover:text-white
+                    "
+
+                    onClick={() => setOpen(true)}
+
+                >
+
+                    Filter
+
+                </button>
+
+            </div>
+
+            {/* DESKTOP */}
+
+            <div className="hidden lg:block">
+
+                <FilterPanel
+
+                    sidebar={true}
+
+                    onApply={onApply}
+
+                    products={products}
+
+                    forFilterData={filterData}
+
+                    searchParams={searchParams}
+
+                    setSearchParams={setSearchParams}
+
+                />
+
+            </div>
+
+            {/* MOBILE */}
+
+            <div className="lg:hidden">
+
+                <FilterPanel
+
+                    open={open}
+
+                    setOpen={setOpen}
+
+                    sidebar={false}
+
+                    onApply={onApply}
+
+                    products={products}
+
+                    forFilterData={filterData}
+
+                    searchParams={searchParams}
+
+                    setSearchParams={setSearchParams}
+
+                />
+
+            </div>
+
+        </>
+
+    );
+
 }

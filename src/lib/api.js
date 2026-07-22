@@ -1,19 +1,138 @@
-export async function fetchAllProductsCategoryCollectionsMetalRates() {
-    const base = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
-    async function doFetch(path) {
-        
-        const url = `${base.replace(/\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`;
-        
-        const res = await fetch(url);
-        if (!res.ok) {
-            throw new Error(`Failed to fetch: ${url}`);
-        }
-        return await res.json();
+const BASE_URL =
+    import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
+
+async function doFetch(path) {
+
+    const url = `${BASE_URL.replace(/\/$/, "")}${path}`;
+
+    const res = await fetch(url);
+
+    if (!res.ok) {
+
+        throw new Error(`Failed to fetch: ${url}`);
+
     }
 
-    const [products, collections, categories, metalRates] = await Promise.all([doFetch(`/product`), doFetch(`/collection`), doFetch(`/category`), doFetch(`/metal`)]);
+    return await res.json();
 
-    return await {products, collections, categories, metalRates}
+}
+
+export async function fetchAllProductsCategoryCollectionsMetalRates() {
+
+    const [
+
+        products,
+
+        collections,
+
+        categories,
+
+        metalRates
+
+    ] = await Promise.all([
+
+        doFetch("/product"),
+
+        doFetch("/collection"),
+
+        doFetch("/category"),
+
+        doFetch("/metal")
+
+    ]);
+
+    return {
+
+        products,
+
+        collections,
+
+        categories,
+
+        metalRates
+
+    };
+
+}
+
+
+export async function fetchFilterData() {
+
+    const [
+
+        collections,
+
+        categories,
+
+        metalRates
+
+    ] = await Promise.all([
+
+        doFetch("/collection"),
+
+        doFetch("/category"),
+
+        doFetch("/metal")
+
+    ]);
+
+    return {
+
+        collections,
+
+        categories,
+
+        metalRates
+
+    };
+
+}
+
+export async function getFilteredProducts(filters = {}) {
+
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+
+        if (
+
+            value === undefined ||
+
+            value === null ||
+
+            value === ""
+
+        ) {
+
+            return;
+
+        }
+
+        if (Array.isArray(value)) {
+
+            value.forEach(item => {
+
+                params.append(key, item);
+
+            });
+
+        }
+
+        else {
+
+            params.append(key, value);
+
+        }
+
+    });
+
+    const query = params.toString();
+
+    return doFetch(
+
+        `/product${query ? `?${query}` : ""}`
+
+    );
 
 }
 
