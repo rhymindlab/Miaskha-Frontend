@@ -182,3 +182,5 @@ export async function  getProductsByCategory(category){
   const products = allProducts.filter(product => product.category === category);
   return products;
 }
+
+

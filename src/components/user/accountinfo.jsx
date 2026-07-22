@@ -1,4 +1,4 @@
-export default function AccountInfo({user,setFormData}){
+export default function AccountInfo({user, setUser, setFormData}){
     return(
         <div className="p-2 flex flex-col gap-4 text-sm justify-center">
             <div className="flex gap-2">

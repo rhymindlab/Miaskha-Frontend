@@ -2,7 +2,7 @@ import { useState } from "react"
 import BillingAddressForm from "./Addressform/billingaddress"
 import ShippingAddressForm from "./Addressform/shippingaddress"
 
-export default function Addresses({user,setFormData}){
+export default function Addresses({user,setUser, setFormData}){
     const [address, setAddress] = useState("Billing Address")
     return(
         <div className="">
@@ -12,11 +12,11 @@ export default function Addresses({user,setFormData}){
             </div>
             {address==="Billing Address" &&(
             <div className="border-1 mt-5 transition-all duration-300">
-                <BillingAddressForm user={user} setFormData={setFormData}/>
+                <BillingAddressForm user={user} setUser={setUser} setFormData={setFormData}/>
             </div>)}
             {address==="Shipping Address" &&(
             <div className="border-1 mt-5 transition-all duration-300">
-                <ShippingAddressForm user={user}/>
+                <ShippingAddressForm user={user} setUser={setUser}/>
             </div>)}
         </div>
     )

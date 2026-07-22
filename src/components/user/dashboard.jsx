@@ -2,7 +2,7 @@ import ordersIcon from '../../assets/checklist.png';
 import addressIcon from '../../assets/checklist.png';
 import editIcon from '../../assets/edit.png';
 import userInfoIcon from "../../assets/userInfo.png";
-export default function Dashboard({user, setTab, accountInfo}){
+export default function Dashboard({user, setUser, setTab, accountInfo}){
     return(
         <div className="flex flex-col lg:w-[1000px] border-1 p-5 text-sm ">
             <div className="relative flex items-center bg-gray-100">

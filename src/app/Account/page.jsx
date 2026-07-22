@@ -8,7 +8,7 @@ import { handlefetchCart } from "../../lib/cart";
 
 export default function Account(){
     const accountInfo = ['Dashboard','Orders','Addresses','Account Details']
-    const {user} = useAuth();
+    const {user, setUser} = useAuth();
     const [formData, setFormData] = useState({
         firstName: user?.firstName || '',
         lastName: user?.lastName || '',
@@ -36,16 +36,16 @@ export default function Account(){
           </div>
           <div className="w-4/5 px-5">
             {tab === accountInfo[0] && (
-                <Dashboard user={user} setTab={setTab} accountInfo={accountInfo} />
+                <Dashboard user={user} setUser={setUser} setTab={setTab} accountInfo={accountInfo} />
             )}
             {tab === accountInfo[1] && (
                 <OrderHistory />
             )}
             {tab === accountInfo[2] && (
-                <Addresses user={user} setFormData={setFormData}/>
+                <Addresses user={user} setUser={setUser} setFormData={setFormData}/>
             )}
             {tab === accountInfo[3] && (
-                <AccountInfo user={user}/>
+                <AccountInfo user={user} setUser={setUser}/>
             )}
           </div>
         </div>

@@ -1,10 +1,10 @@
 import { afterLoginSync } from "../utils/cart-functions";
 
+const BASE_URL = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
 
 export async function loginUser({email,setEmail,password,setPassword,setShowLogin,setLoggedIn,setUser,user}) {
     
     try {
-        const BASE_URL = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
         const response = await fetch(`${BASE_URL}/user/login`, {
             method: "POST",
             headers: {
@@ -119,7 +119,6 @@ export async function signupUser({
   setUser,
 }) {
   try {
-    const BASE_URL = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
 
     const response = await fetch(`${BASE_URL}/user/signup`,
       {
@@ -152,4 +151,24 @@ export async function signupUser({
     console.error(error);
     alert("Something went wrong");
   }
+}
+
+export async function updateUserDetails(formData) {
+
+    const res = await fetch(`${BASE_URL}/user/update`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        throw new Error(data.message || "Failed to update profile");
+    }
+
+    return data;
 }
