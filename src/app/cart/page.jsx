@@ -85,7 +85,7 @@ export default function Cart() {
       </div>
       <div className="w-full lg:block lg:w-1/3 lg:p-10 px-5 py-5 border-t-1 lg:border-0">
 
-        <PriceBreakup cart={cart} />
+        <PriceBreakup cart={cart} user={user} />
 
       </div>
       

@@ -3,33 +3,52 @@ import { handlefetchCart } from "../lib/cart";
 import useAuth from "./useAuth";
 
 export default function useCartCount() {
-
-  const {loggedIn, user} = useAuth();
-
+  const { loggedIn, user } = useAuth();
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-  const syncCart = async () => {
-    const updatedCart = !loggedIn
-      ? JSON.parse(localStorage.getItem("cart")) || []
-      : await handlefetchCart(user);
+    const syncCart = async () => {
+      // Guest cart
+      if (!loggedIn) {
+        const localCart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    const q = updatedCart.reduce(
-      (sum, item) => sum + (item.quantity || 1),
-      0
-    );
+        const quantity = localCart.reduce(
+          (sum, item) => sum + (item.quantity || 1),
+          0
+        );
 
-    setCount(q);
-  };
+        setCount(quantity);
+        return;
+      }
 
-  syncCart();
+      // Wait until user information is available after login.
+      if (!user?._id) {
+        return;
+      }
 
-  window.addEventListener("cartUpdated", syncCart);
+      try {
+        const updatedCart = await handlefetchCart(user);
 
-  return () => {
-    window.removeEventListener("cartUpdated", syncCart);
-  };
-}, [loggedIn, user]);
+        const quantity = updatedCart.reduce(
+          (sum, item) => sum + (item.quantity || 1),
+          0
+        );
+
+        setCount(quantity);
+      } catch (error) {
+        console.error("Unable to load cart count:", error);
+        setCount(0);
+      }
+    };
+
+    syncCart();
+
+    window.addEventListener("cartUpdated", syncCart);
+
+    return () => {
+      window.removeEventListener("cartUpdated", syncCart);
+    };
+  }, [loggedIn, user?._id]);
 
   return count;
 }

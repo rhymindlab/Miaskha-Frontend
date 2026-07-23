@@ -32,6 +32,7 @@ export default function ShippingAddressForm({user, setUser}){
             });
         }
     }, [user]);
+    
     const handleChange = (e) => {
         const { name, value } = e.target;
 
