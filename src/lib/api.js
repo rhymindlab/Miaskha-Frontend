@@ -1,5 +1,6 @@
-const BASE_URL =
-    import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
+const BASE_URL = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
+
+let cache = null;
 
 async function doFetch(path) {
 
@@ -8,84 +9,53 @@ async function doFetch(path) {
     const res = await fetch(url);
 
     if (!res.ok) {
-
         throw new Error(`Failed to fetch: ${url}`);
-
     }
 
-    return await res.json();
-
+    return res.json();
 }
 
-export async function fetchAllProductsCategoryCollectionsMetalRates() {
+export async function fetchAllProductsCategoryCollectionsMetalRates(forceRefresh = false) {
+
+    if (cache && !forceRefresh) {
+        return cache;
+    }
 
     const [
-
         products,
-
         collections,
-
         categories,
-
         metalRates
-
     ] = await Promise.all([
-
         doFetch("/product"),
-
         doFetch("/collection"),
-
         doFetch("/category"),
-
         doFetch("/metal")
-
     ]);
 
-    return {
-
+    cache = {
         products,
-
         collections,
-
         categories,
-
         metalRates
-
     };
 
+    return cache;
 }
-
 
 export async function fetchFilterData() {
 
-    const [
-
+    const {
         collections,
-
         categories,
-
         metalRates
-
-    ] = await Promise.all([
-
-        doFetch("/collection"),
-
-        doFetch("/category"),
-
-        doFetch("/metal")
-
-    ]);
+    } = await fetchAllProductsCategoryCollectionsMetalRates();
 
     return {
-
         collections,
-
         categories,
-
         metalRates
-
     };
-
 }
 
 export async function getFilteredProducts(filters = {}) {
@@ -95,33 +65,17 @@ export async function getFilteredProducts(filters = {}) {
     Object.entries(filters).forEach(([key, value]) => {
 
         if (
-
             value === undefined ||
-
             value === null ||
-
             value === ""
-
         ) {
-
             return;
-
         }
 
         if (Array.isArray(value)) {
-
-            value.forEach(item => {
-
-                params.append(key, item);
-
-            });
-
-        }
-
-        else {
-
+            value.forEach(item => params.append(key, item));
+        } else {
             params.append(key, value);
-
         }
 
     });
@@ -129,58 +83,104 @@ export async function getFilteredProducts(filters = {}) {
     const query = params.toString();
 
     return doFetch(
-
         `/product${query ? `?${query}` : ""}`
-
     );
 
 }
 
 export async function getAllProducts() {
-  const { products } = await fetchAllProductsCategoryCollectionsMetalRates();
-  return products && products.length ? products : [];
+
+    const { products } =
+        await fetchAllProductsCategoryCollectionsMetalRates();
+
+    return products || [];
+
 }
 
 export async function getAllCollections() {
-  const { collections } = await fetchAllProductsCategoryCollectionsMetalRates();
-  return collections && collections.length ? collections : [];
+
+    const { collections } =
+        await fetchAllProductsCategoryCollectionsMetalRates();
+
+    return collections || [];
+
 }
 
 export async function getAllCategories() {
-  const { categories } = await fetchAllProductsCategoryCollectionsMetalRates();
-  return categories && categories.length ? categories : [];
-}
-export async function getCategoryById(id){
-  const categories = await getAllCategories();
-  const category = categories?.find(c => c._id === id);
-  return category;
-}
-export async function getParentChildCategories() {
-  const categories = await getAllCategories();
-  const parentCategories = categories?.filter(c => c.parentCategory === null);
-  const childCategories = categories?.filter(c => c.parentCategory !== null);
-  return {parentCategories, childCategories}
-}
 
+    const { categories } =
+        await fetchAllProductsCategoryCollectionsMetalRates();
 
-
-export async function getProductById(id){
-  const products = await getAllProducts();
-  const product = products?.find(product => product._id === id);
-  return product;
+    return categories || [];
 
 }
 
 export async function getMetalRates() {
-  const {metalRates} = await fetchAllProductsCategoryCollectionsMetalRates();
-  return metalRates;
-  
+
+    const { metalRates } =
+        await fetchAllProductsCategoryCollectionsMetalRates();
+
+    return metalRates || [];
+
 }
 
-export async function  getProductsByCategory(category){
-  const allProducts = await getAllProducts();
-  const products = allProducts.filter(product => product.category === category);
-  return products;
+export async function getCategoryById(id) {
+
+    const categories = await getAllCategories();
+
+    return categories.find(
+        category => category._id === id
+    );
+
 }
 
+export async function getParentChildCategories() {
 
+    const categories = await getAllCategories();
+
+    return {
+
+        parentCategories:
+            categories.filter(
+                category => !category.parentCategory
+            ),
+
+        childCategories:
+            categories.filter(
+                category => category.parentCategory
+            )
+
+    };
+
+}
+
+export async function getProductById(id) {
+
+    const products = await getAllProducts();
+
+    return products.find(
+        product => product._id === id
+    );
+
+}
+
+export async function getProductsByCategory(categoryId) {
+
+    const products = await getAllProducts();
+
+    return products.filter(product => {
+
+        const id =
+            product.category?._id || product.category;
+
+        return id === categoryId;
+
+    });
+
+}
+
+export function clearApiCache() {
+
+    cache = null;
+
+}

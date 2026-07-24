@@ -4,10 +4,10 @@ import { logoutUser } from "../lib/User";
 export default function LoggedInIcon({setShowLogin}){
     const { loggedIn, setLoggedIn, user } = useAuth();
     const dropdown = [
-      {
-        name: "Order History",
-        link: () => {window.location.href = "/orders";}
-      },
+      // {
+      //   name: "Order History",
+      //   link: () => {window.location.href = "/orders";}
+      // },
       {
         name: "Logout",
         link: async () => {await logoutUser(); setLoggedIn(false);},

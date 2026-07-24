@@ -2,50 +2,40 @@
 
 export default function StoneDetails({ product }) {
 
-  const rows =
-    product?.stoneShape?.map((_, index) => ({
-      shape: product.stoneShape?.[index] || "-",
-      noOfDiamonds: product.noOfDiamonds?.[index] || "-",
-      weight: product.stoneWeight?.[index] || "-",
-      color: product.stoneColor?.[index] || "-",
-      clarity: product.stoneClarity?.[index] || "-",
-      sizeRange: product.stoneSizeRange?.[index] || "-"
-    })) || [];
+  const stones = product?.stones || [];
+
+  if (stones.length === 0) {
+    return null;
+  }
 
   return (
+    <div className="mt-6 border overflow-hidden rounded-lg">
 
-    <div className="mt-6 border  overflow-hidden">
-
-      {/* HEADER */}
-
+      {/* Header */}
       <div className="px-6 py-4 border-b bg-gray-50">
-
         <h2 className="text-lg font-semibold">
           {product?.stoneType || "Stone"} Details
         </h2>
-
       </div>
 
-      {/* TABLE */}
-
+      {/* Table */}
       <div className="overflow-x-auto">
-
         <table className="w-full text-sm">
 
-          <thead>
+          <thead className="bg-gray-100">
 
-            <tr className="bg-gray-100">
+            <tr>
 
               <th className="px-4 py-3 text-left">
                 Shape
               </th>
 
               <th className="px-4 py-3 text-left">
-                No. of Diamonds
+                Quantity
               </th>
 
               <th className="px-4 py-3 text-left">
-                Weight
+                Weight (ct)
               </th>
 
               <th className="px-4 py-3 text-left">
@@ -60,41 +50,51 @@ export default function StoneDetails({ product }) {
                 Size Range
               </th>
 
+              <th className="px-4 py-3 text-right">
+                Price
+              </th>
+
             </tr>
 
           </thead>
 
           <tbody>
 
-            {rows.map((row, index) => (
+            {stones.map((stone, index) => (
 
               <tr
-                key={index}
+                key={stone._id || index}
                 className="border-t hover:bg-gray-50"
               >
 
                 <td className="px-4 py-3">
-                  {row.shape}
+                  {stone.shape || "-"}
                 </td>
 
                 <td className="px-4 py-3">
-                  {row.noOfDiamonds}
+                  {stone.quantity ?? "-"}
                 </td>
 
                 <td className="px-4 py-3">
-                  {row.weight}
+                  {stone.weight ?? "-"}
                 </td>
 
                 <td className="px-4 py-3">
-                  {row.color}
+                  {stone.color || "-"}
                 </td>
 
                 <td className="px-4 py-3">
-                  {row.clarity}
+                  {stone.clarity || "-"}
                 </td>
 
                 <td className="px-4 py-3">
-                  {row.sizeRange}
+                  {stone.sizeRange || "-"}
+                </td>
+
+                <td className="px-4 py-3 text-right">
+                  {stone.pricingType === "dynamic"
+                    ? "Dynamic"
+                    : `₹${Number(stone.price || 0).toLocaleString("en-IN")}`}
                 </td>
 
               </tr>
@@ -104,11 +104,7 @@ export default function StoneDetails({ product }) {
           </tbody>
 
         </table>
-
       </div>
-
     </div>
-
   );
-
 }

@@ -1,4 +1,4 @@
-// components/cart/cart-item.jsx
+// components/cart/DesktopCart.jsx
 
 "use client";
 
@@ -16,8 +16,9 @@ export default function CartItem({
   loggedIn,
   user,
 }) {
-
-
+  const quantity = product.quantity ?? 1;
+  const salePrice = Math.round(Number(product.salePrice)) || 0;
+  const total = Math.round(salePrice * quantity);
 
   return (
     <div className="hidden lg:block">
@@ -26,9 +27,9 @@ export default function CartItem({
 
         <div>
           <img
-            className="w-[250px] h-[250px] overflow-hidden"
-            src={product.image || ''}
-            alt="Product"
+            className="w-[250px] h-[250px] object-cover"
+            src={product.image ?? ""}
+            alt={product.title}
           />
         </div>
 
@@ -40,31 +41,29 @@ export default function CartItem({
 
               <div className="flex flex-col w-3/4 gap-3 pl-5 pt-2">
 
-                <span className="text-4xl">
+                <span className="text-4xl font-semibold">
                   {product.title}
                 </span>
 
                 <div>
-                  <span className="mr-2">
-                    Product Id:
+
+                  <span className="mr-2 font-medium">
+                    Product ID:
                   </span>
 
                   <span>{product.sku}</span>
+
                 </div>
 
               </div>
 
               <div className="flex-1 text-2xl pl-5 pt-2">
 
-                ₹
-                {(
-                  (Number(product.salePrice) || 0) *
-                  (product.quantity ?? 1)
-                ).toLocaleString()}
+                ₹{total.toLocaleString()}
 
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-500 mt-1">
 
-                  ₹{Number(product.salePrice) || 0} each
+                  ₹{salePrice.toLocaleString()} each
 
                 </div>
 
@@ -79,29 +78,58 @@ export default function CartItem({
               </div>
 
               <div className="flex-1 flex items-center justify-center">
-                <span className="mx-2">{product.customizations?.Material}</span>
-                <span>{product.customizations?.Purity}</span>
+
+                <span className="mx-2">
+
+                  {product.customizations?.Material || "-"}
+
+                </span>
+
+                <span>
+
+                  {product.customizations?.Purity || ""}
+
+                </span>
+
               </div>
 
-              <div className="w-[159.7px] flex gap-4">
+              <div className="w-[160px] flex gap-4">
 
                 <button
                   onClick={() =>
-                    handlePlus(cart, setCart, index, loggedIn, user)
+                    handlePlus(
+                      cart,
+                      setCart,
+                      index,
+                      loggedIn,
+                      user
+                    )
                   }
-                  className="p-2 px-5 flex-1 bg-gray-200 active:scale-80 duration-200 transition-all "
+                  className="p-2 px-5 flex-1 bg-gray-200 active:scale-90 transition"
                 >
                   +
                 </button>
 
                 <div className="flex items-center px-2">
 
-                  {product.quantity ?? 1}
+                  {quantity}
 
                 </div>
 
-                <button onClick={() => handleMinus(cart, setCart, index, loggedIn, user)}
-                  className="p-2 px-5 flex-1 bg-gray-200 active:scale-80 duration-200 transition-all">-</button>
+                <button
+                  onClick={() =>
+                    handleMinus(
+                      cart,
+                      setCart,
+                      index,
+                      loggedIn,
+                      user
+                    )
+                  }
+                  className="p-2 px-5 flex-1 bg-gray-200 active:scale-90 transition"
+                >
+                  -
+                </button>
 
               </div>
 
@@ -111,7 +139,13 @@ export default function CartItem({
 
               <button
                 onClick={() =>
-                  handleDelete(cart, setCart, index, loggedIn, user)
+                  handleDelete(
+                    cart,
+                    setCart,
+                    index,
+                    loggedIn,
+                    user
+                  )
                 }
                 className="w-[100px] border-r border-gray-200 py-2"
               >
@@ -120,10 +154,12 @@ export default function CartItem({
 
               <button className="pl-2">
 
-                Add to WishList
+                Add to Wishlist
 
                 <span className="text-xs pl-1">
+
                   (Need to Login)
+
                 </span>
 
               </button>

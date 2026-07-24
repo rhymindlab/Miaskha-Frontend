@@ -4,10 +4,26 @@ import { useEffect, useState } from "react";
 import { getMetalRates } from "../lib/api";
 import {  pricedetails } from "../utils/functions";
 
-export default function PriceBreakup({ formData, metalData, product }) {
+export default function PriceBreakup({pricing, product, }) {
 
-  
-  const {selectedMaterial, selectedPurity, metalPrice, stonePrice, makingCharges, gst, total} = pricedetails(formData, metalData, product);
+  const {
+
+    selectedMaterial,
+    selectedPurity,
+
+    metalPrice,
+
+    stonePrice,
+
+    makingCharges,
+
+    subtotal,
+
+    gst,
+
+    total,
+
+  } = pricing;
 
   return (
 
@@ -36,16 +52,22 @@ export default function PriceBreakup({ formData, metalData, product }) {
 
       {/* DIAMOND */}
 
-      <div className="flex items-center justify-between pb-3 border-b">
-        <div>
-          <p className="text-sm text-gray-500">Stone Charges</p>
-          <h3 className="font-medium">{product?.stoneType || "Diamond"}</h3>
-        </div>
-        <span className="font-semibold">₹ {Math.round(stonePrice)}</span>
-      </div>
+      {/* STONE */}
 
+      {stonePrice > 0 && (
+        <div className="flex items-center justify-between pb-3 border-b">
+          <div>
+            <p className="text-sm text-gray-500">Stone Charges</p>
+            <h3 className="font-medium">{product?.stoneType || "Stone"}</h3>
+          </div>
+          <span className="font-semibold">
+            ₹ {Math.round(stonePrice).toLocaleString("en-IN")}
+          </span>
+        </div>
+      )}
       {/* MAKING */}
 
+      {stonePrice > 0 && (
       <div className="flex items-center justify-between pb-3 border-b">
         <div>
           <p className="text-sm text-gray-500">Labour & Craftsmanship</p>
@@ -53,6 +75,22 @@ export default function PriceBreakup({ formData, metalData, product }) {
         </div>
         <span className="font-semibold">₹ {Math.round(makingCharges)}</span>
       </div>
+      )}
+
+      <div className="flex items-center justify-between pb-3 border-b">
+        <div>
+            <p className="text-sm text-gray-500">
+                Subtotal
+            </p>
+            <h3 className="font-medium">
+                Metal + Stone + Making
+            </h3>
+        </div>
+
+        <span className="font-semibold">
+            ₹ {Math.round(subtotal).toLocaleString("en-IN")}
+        </span>
+    </div>
 
       {/* GST */}
 
@@ -61,7 +99,7 @@ export default function PriceBreakup({ formData, metalData, product }) {
           <p className="text-sm text-gray-500">Tax Included</p>
           <h3 className="font-medium">GST</h3>
         </div>
-        <span className="font-semibold">₹ {Math.round(gst)}</span>
+        <span className="font-semibold">₹ {gst}</span>
       </div>
 
       {/* TOTAL */}

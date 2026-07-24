@@ -10,23 +10,20 @@ import { getProductById } from "../../../lib/api";
 export default function ProductPage() {
   const [product, setProduct] = useState(null);
   const { id } = useParams();
-  // if (!id) return notFound();
-  // // const product = await getProductById(id)
-  // // const metalRates = await getMetalRates();
   useEffect(() => {
-    async function fetchProduct(id) {
-      try{
-      const data = await getProductById(id);
-      setProduct(data);
-      }catch(error){
+    if (!id) return;
 
-        console.log(error);
-
+    async function fetchProduct() {
+      try {
+        const data = await getProductById(id);
+        setProduct(data);
+      } catch (error) {
+        console.error(error);
       }
-      
     }
-    fetchProduct(id);
-  }, []);
+
+    fetchProduct();
+  }, [id]);
 
   return (
     <>

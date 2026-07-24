@@ -1,233 +1,452 @@
-import { handlefetchCart, handleMergeCart } from "../lib/cart";
+import {
+  handlefetchCart,
+  handleMergeCart,
+  handleAddCartItem,
+  handleDeleteCartItem,
+  handleUpdateCartItem,
+} from "../lib/cart";
 
-export async function updateCart(updatedCart, setCart ,user, loggedIn) {
+/*
+==========================================
+Guest Cart
+==========================================
+*/
 
-  setCart([...updatedCart]);
+export function updateGuestCart(updatedCart, setCart) {
+  setCart(updatedCart);
 
-  if(!loggedIn){
-    console.log(loggedIn)
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(updatedCart)
+  );
 
-    localStorage.setItem("cart", JSON.stringify(updatedCart)  );
+  window.dispatchEvent(
+    new Event("cartUpdated")
+  );
+}
 
-    window.dispatchEvent(new Event("cartUpdated"));
-  } else{
+/*
+==========================================
+Delete Item
+==========================================
+*/
 
-    await handleMergeCart(user,updatedCart);
+export async function handleDelete(
+  cart,
+  setCart,
+  index,
+  loggedIn,
+  user
+) {
+  // ---------------- Guest ----------------
 
-    window.dispatchEvent(new Event("cartUpdated"));
+  if (!loggedIn) {
+    const updatedCart = cart.filter(
+      (_, i) => i !== index
+    );
+
+    updateGuestCart(updatedCart, setCart);
+
+    return;
   }
-  
+
+  // ---------------- Logged In ----------------
+
+  const item = cart[index];
+
+  if (!item?._id) return;
+
+  try {
+    await handleDeleteCartItem(item._id);
+
+    const backendCart =
+      await handlefetchCart(user);
+
+    setCart(backendCart);
+
+    window.dispatchEvent(
+      new Event("cartUpdated")
+    );
+  } catch (err) {
+    console.error(err);
+  }
 }
 
-export function handleDelete(cart, setCart, indexToDelete, loggedIn, user) {
+/*
+==========================================
+Increase Quantity
+==========================================
+*/
 
-  const updatedCart = cart.filter((_, index) => index !== indexToDelete);
+export async function handlePlus(
+  cart,
+  setCart,
+  index,
+  loggedIn,
+  user
+) {
+  // ---------------- Guest ----------------
 
-  updateCart(updatedCart, setCart, user, loggedIn);
+  if (!loggedIn) {
+    const updatedCart = cart.map(
+      (item, i) =>
+        i === index
+          ? {
+              ...item,
+              quantity:
+                (item.quantity || 1) + 1,
+            }
+          : item
+    );
 
+    updateGuestCart(updatedCart, setCart);
+
+    return;
+  }
+
+  // ---------------- Logged In ----------------
+
+  const item = cart[index];
+
+  if (!item?._id) return;
+
+  try {
+    await handleUpdateCartItem(
+      item._id,
+      item.quantity + 1
+    );
+
+    const backendCart =
+      await handlefetchCart(user);
+
+    setCart(backendCart);
+
+    window.dispatchEvent(
+      new Event("cartUpdated")
+    );
+  } catch (err) {
+    console.error(err);
+  }
 }
 
-export function handlePlus(cart, setCart, indexToPlus, loggedIn, user) {
+/*
+==========================================
+Decrease Quantity
+==========================================
+*/
 
-  const updatedCart = cart.map((item, index) => {
+export async function handleMinus(
+  cart,
+  setCart,
+  index,
+  loggedIn,
+  user
+) {
+  // ---------------- Guest ----------------
 
-    if (index === indexToPlus) {
+  if (!loggedIn) {
+    const updatedCart = cart.map(
+      (item, i) =>
+        i === index
+          ? {
+              ...item,
+              quantity: Math.max(
+                1,
+                (item.quantity || 1) - 1
+              ),
+            }
+          : item
+    );
 
-      return {
-        ...item,
-        quantity: (item.quantity || 1) + 1,
-      };
+    updateGuestCart(updatedCart, setCart);
 
-    }
+    return;
+  }
 
-    return item;
+  // ---------------- Logged In ----------------
 
-  });
+  const item = cart[index];
 
-  updateCart(updatedCart, setCart, user, loggedIn);
+  if (!item?._id) return;
 
-}
-
-export function handleMinus(cart, setCart, indexToMinus, loggedIn, user) {
-  
-
-  const updatedCart = cart.map((item, index) => {
-
-    if (index === indexToMinus) {
-
-      return {
-        ...item,
-        quantity: Math.max(
-          1,
-          (item.quantity || 1) - 1
-        ),
-      };
-
-    }
-
-    return item;
-
-  });
-
-  updateCart(updatedCart, setCart, user, loggedIn);
-
-}
-
-
-function mergeCarts(backendCart, guestCart, user) {
-  const merged = [...backendCart];
-  const id = user._id
-  guestCart?.forEach((guestItem) => {
-    const existing = merged.find(
-      
-      (item) =>(
-        
-        item?.product_id === guestItem?.product_id &&
-      item.customizations?.Material ===
-      guestItem.customizations?.Material &&
-      item.customizations?.Purity ===
-      guestItem.customizations?.Purity
+  try {
+    await handleUpdateCartItem(
+      item._id,
+      Math.max(
+        1,
+        item.quantity - 1
       )
     );
-    
+
+    const backendCart =
+      await handlefetchCart(user);
+
+    setCart(backendCart);
+
+    window.dispatchEvent(
+      new Event("cartUpdated")
+    );
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+/*
+==========================================
+Merge Guest Cart with Backend Cart
+==========================================
+*/
+
+function mergeCarts(
+  backendCart = [],
+  guestCart = [],
+  user
+) {
+  const merged = [...backendCart];
+
+  guestCart.forEach((guestItem) => {
+    const existing = merged.find(
+      (item) =>
+        String(item.product_id) ===
+          String(guestItem.product_id) &&
+        item.customizations?.Material ===
+          guestItem.customizations?.Material &&
+        item.customizations?.Purity ===
+          guestItem.customizations?.Purity
+    );
+
     if (existing) {
-      existing.quantity += guestItem.quantity;
+      existing.quantity +=
+        Number(guestItem.quantity || 1);
     } else {
-      merged.push({...guestItem, user_id: id});
+      merged.push({
+        ...guestItem,
+
+        user_id: user._id,
+
+        title:
+          guestItem.title || "",
+
+        sku:
+          guestItem.sku || "",
+
+        image:
+          guestItem.image || "",
+
+        quantity:
+          Number(guestItem.quantity) || 1,
+
+        salePrice:
+          Number(guestItem.salePrice) || 0,
+
+        gst:
+          Number(guestItem.gst) || 0,
+
+        customizations: {
+          Material:
+            guestItem.customizations
+              ?.Material || "",
+
+          Purity:
+            guestItem.customizations
+              ?.Purity || "",
+        },
+      });
     }
   });
 
   return merged;
 }
 
-export async function handleAddToCart(product, selectedMaterialNotNormalize, selectedPurity, metalPrice, stonePrice, makingCharges, gst, finalPrice, loggedIn, user) {
+/*
+==========================================
+Add To Cart
+==========================================
+*/
 
-  if(!loggedIn){
-    const existingCart = JSON.parse(localStorage.getItem("cart")) || [];
+export async function handleAddToCart(
+  product,
+  selectedMaterial,
+  selectedPurity,
+  subtotal,
+  gst,
+  loggedIn,
+  user
+) {
+  const cartItem = {
+    product_id: product._id,
 
-    const existingProduct = existingCart.find(
-        (item) => item.product_id === product._id &&
-        item.customizations?.Material === selectedMaterialNotNormalize &&
-        item.customizations?.Purity === selectedPurity
-      );
+    title: product.title,
 
-    
+    sku: product.sku || "",
 
-    let updatedCart;
+    image: product.images?.[0] || "",
 
-    if (existingProduct) {
+    quantity: 1,
 
-      updatedCart = existingCart.map((item) => {
+    // IMPORTANT:
+    // Store subtotal only.
+    // GST is stored separately.
+    salePrice: Number(subtotal) || 0,
 
-      if (item.product_id === product._id &&
-          item.customizations?.Material === selectedMaterialNotNormalize &&
-          item.customizations?.Purity === selectedPurity) {
+    gst: Number(gst) || 0,
 
-        return {
-          ...item,
-          quantity: (item.quantity || 1) + 1
-        };
+    customizations: {
+      Material: selectedMaterial,
+      Purity: selectedPurity,
+    },
+  };
 
-      }
+  /*
+  ==========================================
+  Guest User
+  ==========================================
+  */
 
-      return item;
+  if (!loggedIn) {
 
-      });
+    const cart =
+      JSON.parse(localStorage.getItem("cart")) || [];
 
-    } else {
+    const existing = cart.find(
+      (item) =>
+        String(item.product_id) ===
+          String(cartItem.product_id) &&
+        item.customizations?.Material ===
+          cartItem.customizations.Material &&
+        item.customizations?.Purity ===
+          cartItem.customizations.Purity
+    );
 
-      updatedCart = [
-        ...existingCart,
-        {
-          product_id: product._id,
-          name: product.name,
-          image: product.images[0],
-          quantity: 1, 
-          customizations: {
-            Material: selectedMaterialNotNormalize,
-            Purity: selectedPurity, 
-          },
-          salePrice:metalPrice+stonePrice+makingCharges,
-          gst:gst,
-        }
-      ];
+    if (existing) {
 
-    }
-
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-
-    window.dispatchEvent(new Event("cartUpdated"));
-  }
-  else{
-    const backendCart = await handlefetchCart(user);
-    console.log(backendCart);
-
-    const existingProduct = backendCart.find((item) => item.product_id === product._id &&
-        item.customizations?.Material === selectedMaterialNotNormalize &&
-        item.customizations?.Purity === selectedPurity
-      );
-    
-    let updatedCart;
-
-    if (existingProduct) {
-
-      updatedCart = backendCart.map((item) => {
-
-      if (item.product_id === product._id &&
-          item.customizations?.Material === selectedMaterialNotNormalize &&
-          item.customizations?.Purity === selectedPurity) {
-
-        return {
-          ...item,
-          quantity: (item.quantity || 1) + 1
-        };
-
-      }
-
-      return item;
-
-      });
+      existing.quantity += 1;
 
     } else {
 
-      updatedCart = [
-        ...backendCart,
-        {
-          product_id: product._id,
-          name: product.name,
-          image: product.images[0],
-          quantity: 1, 
-          customizations: {
-            Material: selectedMaterialNotNormalize,
-            Purity: selectedPurity, 
-          },
-          salePrice:metalPrice+stonePrice+makingCharges,
-          gst:gst,
-        }
-      ];
+      cart.push(cartItem);
 
     }
-    await handleMergeCart(user,updatedCart);
 
-    window.dispatchEvent(new Event("cartUpdated"));
-    
-    
+    localStorage.setItem(
+      "cart",
+      JSON.stringify(cart)
+    );
+
+    window.dispatchEvent(
+      new Event("cartUpdated")
+    );
+
+    return {
+      success: true,
+      guest: true,
+    };
+  }
+
+  /*
+  ==========================================
+  Logged In User
+  ==========================================
+  */
+
+  try {
+
+    await handleAddCartItem({
+
+      user_id: user._id,
+
+      ...cartItem,
+
+    });
+
+    window.dispatchEvent(
+      new Event("cartUpdated")
+    );
+
+    return {
+
+      success: true,
+
+      guest: false,
+
+    };
+
+  } catch (err) {
+
+    console.error(err);
+
+    return {
+
+      success: false,
+
+      error: err,
+
+    };
+
   }
 }
 
-export async function afterLoginSync(user){
-  const guestCart = JSON.parse(localStorage.getItem("cart")) || [];
+/*
+==========================================
+Sync Guest Cart After Login
+==========================================
+*/
 
-  const backendCart = await handlefetchCart(user);
+export async function afterLoginSync(user) {
+  try {
 
-  
-  const updatedCart = mergeCarts(backendCart, guestCart,user);
-  
-  await handleMergeCart(user,updatedCart);
+    if (!user?._id) return;
+
+    // Guest cart
+    const guestCart =
+      JSON.parse(
+        localStorage.getItem("cart")
+      ) || [];
+
+    // Nothing to merge
+    if (guestCart.length === 0) {
+      return;
+    }
+
+    // Backend cart
+    const backendCart =
+      await handlefetchCart(user);
+
+    // Merge
+    const mergedCart =
+      mergeCarts(
+        backendCart,
+        guestCart,
+        user
+      );
+
+    // Save merged cart
+    await handleMergeCart(
+      user,
+      mergedCart
+    );
+
+    // Clear guest cart only after successful merge
+    localStorage.removeItem("cart");
+
+    window.dispatchEvent(
+      new Event("cartUpdated")
+    );
+
+    return {
+      success: true,
+    };
+
+  } catch (err) {
+
+    console.error(
+      "Cart Sync Error:",
+      err
+    );
+
+    return {
+      success: false,
+      error: err,
+    };
+  }
 }
-
-
-
-
-
-

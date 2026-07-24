@@ -1,68 +1,138 @@
-export async function handlefetchCart(user) {
-    const base = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
-    async function doFetch(path,) {
-        
-        const url = `${base.replace(/\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`;
-        
-        const id = user?._id;
+const BASE =
+  import.meta.env.VITE_BACKEND_API_URL ||
+  "http://localhost:8000";
 
-        const res = await fetch(url,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },  
-                credentials: "include",
-                body: JSON.stringify({
-                    id,    
-                })
-            }
-         );
+/*
+==========================================
+Common Fetch Helper
+==========================================
+*/
 
-        if (!res.ok) {
-            throw new Error(`Failed to fetch: ${url}`);
-        }
-        return await res.json();
-    }
+async function request(url, options = {}) {
+  const response = await fetch(`${BASE}${url}`, {
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    ...options,
+  });
 
-    const carts = await doFetch(`/cart/id`);
+  const contentType = response.headers.get("content-type");
 
-    return carts
+  let data;
 
+  if (contentType && contentType.includes("application/json")) {
+    data = await response.json();
+  } else {
+    const text = await response.text();
+
+    console.error("Non-JSON Response:", {
+      url: `${BASE}${url}`,
+      status: response.status,
+      body: text,
+    });
+
+    throw new Error(
+      `Server returned ${response.status} instead of JSON`
+    );
+  }
+
+  if (!response.ok) {
+    throw new Error(data.message || "Request Failed");
+  }
+
+  return data;
 }
 
-export async function handleMergeCart(user ,carts) {
-    const base = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
-    async function doFetch(path,) {
-        
-        const url = `${base.replace(/\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`;
-        const id = user?._id;
-        const res = await fetch(url,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },  
-                credentials: "include",
-                body: JSON.stringify({
-                    id,
-                    carts
+/*
+==========================================
+Get Cart
+==========================================
+*/
 
-                })
-            }
-         );
+export async function handlefetchCart(
+  user
+) {
+  if (!user?._id) return [];
 
-        if (!res.ok) {
-            throw new Error(`Failed to fetch: ${url}`);
-        }
-        return res.json();
+  return await request(
+    `/cart/${user._id}`
+  );
+}
+
+/*
+==========================================
+Add Item
+==========================================
+*/
+
+export async function handleAddCartItem(
+  item
+) {
+  return await request("/cart", {
+    method: "POST",
+    body: JSON.stringify(item),
+  });
+}
+
+/*
+==========================================
+Merge Cart
+==========================================
+*/
+
+export async function handleMergeCart(
+  user,
+  carts
+) {
+  return await request(
+    "/cart/merge",
+    {
+      method: "POST",
+
+      body: JSON.stringify({
+        id: user._id,
+        carts,
+      }),
     }
+  );
+}
 
-    const cart = await doFetch(`/cart/merge`);
+/*
+==========================================
+Update Quantity
+==========================================
+*/
 
-    localStorage.removeItem("cart");
+export async function handleUpdateCartItem(
+  id,
+  quantity
+) {
+  return await request(
+    `/cart/${id}`,
+    {
+      method: "PUT",
 
-    window.dispatchEvent(new Event("cartUpdated"));
+      body: JSON.stringify({
+        quantity,
+      }),
+    }
+  );
+}
 
+/*
+==========================================
+Delete Item
+==========================================
+*/
 
+export async function handleDeleteCartItem(
+  id
+) {
+  return await request(
+    `/cart/${id}`,
+    {
+      method: "DELETE",
+    }
+  );
 }
