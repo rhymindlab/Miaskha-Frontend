@@ -25,8 +25,7 @@ export default function FilterPanel({ open, setOpen, onApply, sidebar = false, i
 
 };
 
-  console.log(forFilterData)
-
+  console.log("FilterPanel", sidebar ? "Desktop" : "Mobile");
   
 
   const [slide, setSlide] = useState(null);
@@ -100,6 +99,8 @@ export default function FilterPanel({ open, setOpen, onApply, sidebar = false, i
 
   // AUTO APPLY DESKTOP
   useEffect(() => {
+    console.log("🔥 loadProducts effect");
+
 
     async function loadProducts() {
 

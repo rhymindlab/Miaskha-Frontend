@@ -19,6 +19,10 @@ export default function Filters({
     setSearchParams
 
 }) {
+    console.log("Filters Render");
+
+
+    
 
     const [open, setOpen] = useState(false);
 

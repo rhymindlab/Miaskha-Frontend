@@ -13,7 +13,6 @@ export default function PriceBreakup({ cart = [], user }) {
         const qty = Number(item.quantity) || 1;
         
         subtotal += Math.round((Number(item.salePrice) || 0) * qty);
-        console.log(subtotal);
       gst += (Number(item.gst) || 0) * qty;
     });
 

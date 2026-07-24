@@ -9,6 +9,7 @@ export default function PriceBreakup({pricing, product, }) {
   const {
 
     selectedMaterial,
+
     selectedPurity,
 
     metalPrice,
@@ -41,7 +42,7 @@ export default function PriceBreakup({pricing, product, }) {
     <div className="p-6 space-y-4">
 
       {/* METAL */}
-
+      {metalPrice  > 0 && (
       <div className="flex items-center justify-between pb-3 border-b">
         <div>
           <p className="text-sm text-gray-500">Metal Price</p>
@@ -49,25 +50,24 @@ export default function PriceBreakup({pricing, product, }) {
         </div>
         <span className="font-semibold text-lg">₹ {Math.round(metalPrice)}</span>
       </div>
-
-      {/* DIAMOND */}
+      )}
 
       {/* STONE */}
-
-      {stonePrice > 0 && (
+      {product?.stoneType && Number(stonePrice) > 0 && (
         <div className="flex items-center justify-between pb-3 border-b">
           <div>
             <p className="text-sm text-gray-500">Stone Charges</p>
-            <h3 className="font-medium">{product?.stoneType || "Stone"}</h3>
+            <h3 className="font-medium">{product?.stoneType}</h3>
           </div>
+
           <span className="font-semibold">
-            ₹ {Math.round(stonePrice).toLocaleString("en-IN")}
+            ₹ {Math.round(Number(stonePrice)).toLocaleString("en-IN")}
           </span>
         </div>
       )}
       {/* MAKING */}
 
-      {stonePrice > 0 && (
+      {makingCharges > 0 && (
       <div className="flex items-center justify-between pb-3 border-b">
         <div>
           <p className="text-sm text-gray-500">Labour & Craftsmanship</p>
@@ -80,10 +80,10 @@ export default function PriceBreakup({pricing, product, }) {
       <div className="flex items-center justify-between pb-3 border-b">
         <div>
             <p className="text-sm text-gray-500">
-                Subtotal
+                {metalPrice && (`Subtotal`) || ` Product Price `}
             </p>
             <h3 className="font-medium">
-                Metal + Stone + Making
+                {metalPrice>0 && (`Metal +`)}||{stonePrice>0 && (`Stone + `)}||{makingCharges>0 && (`Making`)}
             </h3>
         </div>
 
@@ -99,7 +99,7 @@ export default function PriceBreakup({pricing, product, }) {
           <p className="text-sm text-gray-500">Tax Included</p>
           <h3 className="font-medium">GST</h3>
         </div>
-        <span className="font-semibold">₹ {gst}</span>
+        <span className="font-semibold">₹{gst}</span>
       </div>
 
       {/* TOTAL */}

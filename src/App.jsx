@@ -1,5 +1,6 @@
 import './App.css';
 
+
 import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
 
@@ -18,8 +19,9 @@ import { fetchAllProductsCategoryCollectionsMetalRates } from './lib/api';
 import Account from './app/Account/page';
 
 
+
 function App() {
-  fetchAllProductsCategoryCollectionsMetalRates();
+
   return (
     <BrowserRouter>
 

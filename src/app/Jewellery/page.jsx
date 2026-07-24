@@ -7,6 +7,11 @@ import {
 import AllProducts from "../../components/allProducts";
 
 export default function JewelleryPage() {
+    const renderCount = React.useRef(0);
+
+    renderCount.current++;
+
+    console.log("JewelleryPage Render:", renderCount.current);
 
     const [products, setProducts] = useState([]);
 

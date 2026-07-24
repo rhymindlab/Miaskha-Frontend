@@ -179,11 +179,30 @@ export default function ProductClient({ initialProduct }) {
 
           </h1>
 
-          <p className="text-2xl text-stone-700 mb-6">
+          <div className="mb-6">
 
-            {displayPrice}
+            {Number(product.mrp) > Number(total) && (
+              <div className="flex items-center gap-3 mb-1">
 
-          </p>
+                <span className="text-gray-500 line-through text-lg">
+                  ₹ {Number(product.mrp).toLocaleString("en-IN")}
+                </span>
+
+                <span className="bg-green-100 text-green-700 text-sm font-semibold px-2 py-1 rounded">
+                  {Math.round(
+                    ((Number(product.mrp) - Number(subtotal)) / Number(product.mrp)) * 100
+                  )}
+                  % OFF
+                </span>
+
+              </div>
+            )}
+
+  <p className="text-3xl font-bold text-stone-700">
+    ₹ {Math.round(subtotal).toLocaleString("en-IN")}
+  </p>
+
+</div>
 
           <p className="text-gray-600 mb-4 border-b p-2">
 

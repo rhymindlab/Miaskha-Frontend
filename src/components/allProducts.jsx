@@ -12,6 +12,10 @@ export default function AllProducts({
     metalData = [],
     forBreadCrumbs = []
 }) {
+    // useEffect(() => {
+    //     console.log("initialProducts changed");
+    //     setProducts(initialProducts);
+    // }, [initialProducts]);
 
     const [products, setProducts] = useState(initialProducts);
 
