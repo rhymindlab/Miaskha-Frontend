@@ -144,7 +144,7 @@ export default function FilterPanel({ open, setOpen, onApply, sidebar = false, i
 
                 await getFilteredProducts(filters);
 
-            onApply(data);
+            onApply(data.products);
 
         }
 

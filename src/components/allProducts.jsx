@@ -24,6 +24,9 @@ export default function AllProducts({
     useEffect(() => {
         setProducts(initialProducts);
     }, [initialProducts]);
+    console.log("API Response:", initialProducts);
+    console.log("products state:", products);
+    console.log("Is array:", Array.isArray(products));
 
     return (
         <div className="w-full">

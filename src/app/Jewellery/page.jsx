@@ -42,7 +42,7 @@ export default function JewelleryPage() {
                 } =
                     await fetchAllProductsCategoryCollectionsMetalRates();
 
-                setProducts(products);
+                setProducts(products.products);
 
                 setCollections(collections);
 
