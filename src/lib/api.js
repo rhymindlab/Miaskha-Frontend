@@ -209,7 +209,7 @@ export async function getProductById(id) {
 
     const products = await getAllProducts();
 
-    return products.find(
+    return products.products.find(
         product => product._id === id
     );
 
