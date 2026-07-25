@@ -27,7 +27,7 @@ export async function loginUser({email,setEmail,password,setPassword,setShowLogi
                 }
             );
             const userData = await profileResponse.json();
-            console.log('userData',userData)
+            
             setUser(userData);
             
             alert("Login Successful");
@@ -74,7 +74,7 @@ export async function logoutUser(){
     }
 }
 
-export function checkLogin(setLoggedIn, setUser) {
+export async function checkLogin(setLoggedIn, setUser) {
 
     try {
         const BASE_URL = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
