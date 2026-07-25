@@ -3,49 +3,68 @@ import React, { useEffect, useState } from "react";
 import DesktopNavbar from "./DesktopNavbar";
 import MobileNavbar from "./MobileNavbar";
 import MobileMenu from "./MobileMenu";
-
 import ProductBar from "./ProductBar";
+
+import Login from "../login";
+import Signup from "../signUp";
 
 import useAuth from "../../hooks/useAuth";
 import { checkLogin } from "../../lib/User";
-import { getAllCategories, getAllCollections, getParentChildCategories } from "../../lib/api";
+import {
+  getAllCollections,
+  getParentChildCategories,
+} from "../../lib/api";
 
 export default function Navbar() {
-  const {loggedIn, setLoggedIn, user, setUser} = useAuth();
-  const [parentCategory, setParentCategory] = useState();
-  const [childCategory, setChildCategory] = useState();
-  const [collection, setCollection] = useState();
+  const { loggedIn, setLoggedIn, user, setUser } = useAuth();
+
+  const [parentCategory, setParentCategory] = useState([]);
+  const [childCategory, setChildCategory] = useState([]);
+  const [collection, setCollection] = useState([]);
+
+  const [open, setOpen] = useState(false);
+
+  // Login Modal
+  const [showLogin, setShowLogin] = useState(false);
+  const [showSignup, setShowSignup] = useState(false);
 
   useEffect(() => {
     checkLogin(setLoggedIn, setUser);
 
     async function fetchData() {
+      try {
         const [
-            { parentCategories, childCategories },
-            allCollections
+          { parentCategories, childCategories },
+          allCollections,
         ] = await Promise.all([
-            getParentChildCategories(),
-            getAllCollections()
+          getParentChildCategories(),
+          getAllCollections(),
         ]);
 
-        setParentCategory(parentCategories);
-        setChildCategory(childCategories);
-        setCollection(allCollections);
+        setParentCategory(parentCategories || []);
+        setChildCategory(childCategories || []);
+        setCollection(allCollections || []);
+      } catch (err) {
+        console.log(err);
+      }
     }
 
     fetchData();
-}, []);
-
-
-  const [open, setOpen] = useState(false);
+  }, []);
 
   return (
+    <header className="sticky top-0 z-50 bg-white border-b">
 
-    <header className="bg-white border-b sticky top-0 z-50">
+      <DesktopNavbar
+        loggedIn={loggedIn}
+        setShowLogin={setShowLogin}
+      />
 
-      <DesktopNavbar loggedIn={loggedIn} setLoggedIn={setLoggedIn} user={user} setUser={setUser}/>
-
-      <MobileNavbar setOpen={setOpen} />
+      <MobileNavbar
+        loggedIn={loggedIn}
+        setOpen={setOpen}
+        setShowLogin={setShowLogin}
+      />
 
       <MobileMenu
         open={open}
@@ -60,7 +79,18 @@ export default function Navbar() {
         collections={collection}
       />
 
-    </header>
+      <Login
+        showLogin={showLogin}
+        setShowLogin={setShowLogin}
+        setShowSignup={setShowSignup}
+      />
 
+      <Signup
+        showSignup={showSignup}
+        setShowSignup={setShowSignup}
+        setShowLogin={setShowLogin}
+      />
+
+    </header>
   );
 }

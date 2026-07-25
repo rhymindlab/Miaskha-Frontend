@@ -17,7 +17,7 @@ export default function ProductPage() {
       try {
         const data = await getProductById(id);
         setProduct(data);
-        console.log(product);
+        console.log('Products',data);
       } catch (error) {
         console.error(error);
       }

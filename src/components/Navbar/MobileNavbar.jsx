@@ -1,38 +1,49 @@
-import React from "react";
 import logo from "../../assets/logo.png";
 import CartIcon from "../cart/cartIcon";
-// import WishListIcon from "../wishlistIcon/WishlistIcon";
+import LoggedInIcon from "../loggedInIcon";
 
-export default function MobileNavbar({ setOpen }) {
+export default function MobileNavbar({
+  setOpen,
+  loggedIn,
+  setShowLogin,
+}) {
   return (
-    <div className="lg:hidden border-b">
-      <div className="flex items-center justify-between px-4 h-16">
+    <div className="lg:hidden border-b bg-white">
+
+      <div className="mx-auto max-w-6xl px-4 h-16 flex items-center justify-between">
 
         {/* Logo */}
-        <a href="/" className="flex items-center flex-1 overflow-visible">
+        <a href="/" className="flex items-center">
           <img
             src={logo}
             alt="MIASHKA Logo"
-            className="h-20 w-auto object-contain scale-125 origin-left"
+            className="h-20 w-auto object-contain"
           />
         </a>
 
-        {/* Cart */}
+        {/* Right Side */}
         <div className="flex items-center gap-4">
+
           <CartIcon />
-          {/* <WishListIcon /> */}
+
+          <LoggedInIcon
+            loggedIn={loggedIn}
+            setShowLogin={setShowLogin}
+          />
 
           <button
             onClick={() => setOpen(true)}
+            aria-label="Open Menu"
             className="flex flex-col gap-1"
-            aria-label="Open menu"
           >
             <span className="w-6 h-0.5 bg-black"></span>
             <span className="w-6 h-0.5 bg-black"></span>
             <span className="w-6 h-0.5 bg-black"></span>
           </button>
+
         </div>
-        </div>
+
+      </div>
 
     </div>
   );

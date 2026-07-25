@@ -27,7 +27,7 @@ export default function Account(){
     const [tab, setTab] = useState(accountInfo[0]);
     
     return(
-        <div className="flex px-30 py-10">
+        <div className="hidden lg-flex lg-px-30 lg-py-10">
           <div className="flex flex-col font-bold gap-2 w-1/5">
             {
                 accountInfo.map((item,index)=>(
@@ -35,7 +35,7 @@ export default function Account(){
                 ))
             }
           </div>
-          <div className="w-4/5 px-5">
+          <div className="hidden lg-w-4/5 lg-px-5">
             {tab === accountInfo[0] && (
                 <Dashboard user={user} setUser={setUser} setTab={setTab} accountInfo={accountInfo} />
             )}

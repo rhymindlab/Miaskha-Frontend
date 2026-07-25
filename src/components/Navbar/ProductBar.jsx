@@ -2,31 +2,24 @@ import DropdownMenu from "./DropdownMenu";
 
 export default function ProductBar({
   parentCategories = [],
-  childCategories= [],
-  collections = []
+  childCategories = [],
+  collections = [],
 }) {
-
   return (
-
-    <div className="hidden md:flex lg:flex flex-wrap pl-20 bg-blue-500 transition-all">
-
-      {parentCategories.map((parent, index) => (
-
-        <DropdownMenu
-          key={index}
-          title={parent.name}
-          items={childCategories.filter(child => child?.parentCategory === parent._id)}
-          titleLink={`/Jewellery?category=${parent.slug}`}
-          itemsLink="/Jewellery?category="
-          
-        />
-
-      ))}
-
-      {/* <DropdownMenu title="Collections" items={collections} titleLink={`/Collections`}
-      /> */}
-
-    </div>
-
+    <nav className="hidden lg:flex justify-center border-y border-gray-200 bg-white">
+      <div className="flex">
+        {parentCategories.map((parent) => (
+          <DropdownMenu
+            key={parent._id}
+            title={parent.name}
+            titleLink={`/Jewellery?category=${parent.slug}`}
+            items={childCategories.filter(
+              (child) => child?.parentCategory === parent._id
+            )}
+            collections={collections.slice(0, 6)}
+          />
+        ))}
+      </div>
+    </nav>
   );
 }

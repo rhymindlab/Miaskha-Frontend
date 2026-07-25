@@ -18,10 +18,11 @@ function ProductCard({ product, metalData }) {
       product?.purity ||
       "18K",
   });
-
+  
   const pricing = useMemo(() => {
     return pricedetails(formData, metalData, product);
   }, [formData, metalData, product]);
+  console.log('Pricing',pricing)
 
   const {
     selectedMaterialNotNormalize,
