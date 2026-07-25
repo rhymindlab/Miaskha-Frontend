@@ -1,67 +1,67 @@
-import { useParams, useSearchParams } from "react-router-dom";
-import ProductClient from "../../../../components/product-page/product-client";
-import JewelleryClient from "../../../../components/Jewellery/jewellery-client";
-import { useEffect, useState } from "react";
-import { getCategoryById, getProductsByCategory } from "../../../../lib/api";
-import { handleCategoryFilter, handleCategoryFilterData } from "../../../../lib/category";
+// import { useParams, useSearchParams } from "react-router-dom";
+// import ProductClient from "../../../../components/product-page/product-client";
+// import JewelleryClient from "../../../../components/Jewellery/jewellery-client";
+// import { useEffect, useState } from "react";
+// import { getCategoryById, getProductsByCategory } from "../../../../lib/api";
+// import { handleCategoryFilter, handleCategoryFilterData } from "../../../../lib/category";
 
-export default function CategorySlug(){
+// export default function CategorySlug(){
 
-  const [products, setProducts] = useState();
-  const [category, setCategory] = useState();
-  const [filterData, setFilterData] = useState();
+//   const [products, setProducts] = useState();
+//   const [category, setCategory] = useState();
+//   const [filterData, setFilterData] = useState();
 
   
-  const [loading, setLoading] = useState(true);
-  const {slug}  = useParams();
-  const [searchParams, setSearchParams] = useSearchParams();
+//   const [loading, setLoading] = useState(true);
+//   const {slug}  = useParams();
+//   const [searchParams, setSearchParams] = useSearchParams();
 
 
-  useEffect(() => {
+//   useEffect(() => {
   
-    async function fetch() {
+//     async function fetch() {
 
-      try {
+//       try {
 
-        const allData = await handleCategoryFilter(slug,searchParams);  
-        const filterData = await handleCategoryFilterData(slug);
-        setFilterData(filterData.filterData.collections)
+//         const allData = await handleCategoryFilter(slug,searchParams);  
+//         const filterData = await handleCategoryFilterData(slug);
+//         setFilterData(filterData.filterData.collections)
         
-        console.log(allData);
-        console.log(filterData.filterData.collections);
+//         console.log(allData);
+//         console.log(filterData.filterData.collections);
         
-        setProducts(allData.products);
+//         setProducts(allData.products);
 
-      } catch (error) {
+//       } catch (error) {
 
-        console.log(error);
+//         console.log(error);
 
-      } finally {
+//       } finally {
 
-        setLoading(false);
+//         setLoading(false);
 
-      }
+//       }
 
-    }
+//     }
 
     
 
-    fetch();
+//     fetch();
 
-  }, [searchParams]);
+//   }, [searchParams]);
   
-  if (loading) {
+//   if (loading) {
 
-    return (
-      <div className="py-6">
-        Loading products...
-      </div>
-    );
+//     return (
+//       <div className="py-6">
+//         Loading products...
+//       </div>
+//     );
 
-  }
-    return (
-        <>
-        <JewelleryClient initialProducts={products} forBreadCrumbs={category} filterData={filterData} searchParams={searchParams} setSearchParams={setSearchParams}/>
-        </>
-    )
-}
+//   }
+//     return (
+//         <>
+//         <JewelleryClient initialProducts={products} forBreadCrumbs={category} filterData={filterData} searchParams={searchParams} setSearchParams={setSearchParams}/>
+//         </>
+//     )
+// }

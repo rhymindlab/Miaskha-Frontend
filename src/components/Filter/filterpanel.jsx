@@ -1,15 +1,14 @@
 "use client";
-import { getFilteredProducts } from "../../lib/api";
 
-import { useSearchParams, } from "react-router-dom";
 
-import { useState, useEffect, } from "react";
+import { useState,  } from "react";
 
 import { filterdata }from "../../utils/FilterData";
 
 
 
 export default function FilterPanel({ open, setOpen, onApply, sidebar = false, intialproducts = [], forFilterData = [],searchParams, setSearchParams}) {
+  
 
   const updatedFilter = {
 
@@ -91,126 +90,20 @@ export default function FilterPanel({ open, setOpen, onApply, sidebar = false, i
 
     setSearchParams({});
 
+    if (!sidebar) {
+        setOpen(false);
+    }
+
   }
 
-  // FILTER PRODUCTS
 
-  
+  function applyFilters() {
 
-  // AUTO APPLY DESKTOP
-  useEffect(() => {
-    console.log("🔥 loadProducts effect");
+      if (!sidebar) {
+          setOpen(false);
+      }
 
-
-    async function loadProducts() {
-
-        try {
-
-            const filters = {};
-
-            searchParams.forEach((value, key) => {
-
-                if (filters[key]) {
-
-                    if (Array.isArray(filters[key])) {
-
-                        filters[key].push(value);
-
-                    }
-
-                    else {
-
-                        filters[key] = [
-
-                            filters[key],
-
-                            value
-
-                        ];
-
-                    }
-
-                }
-
-                else {
-
-                    filters[key] = value;
-
-                }
-
-            });
-
-            const data =
-
-                await getFilteredProducts(filters);
-
-            onApply(data.products);
-
-        }
-
-        catch (err) {
-
-            console.log(err);
-
-        }
-
-    }
-
-    loadProducts();
-
-}, [searchParams]);
-
-  // MOBILE APPLY
-
-  async function applyFilters() {
-
-    const filters = {};
-
-    searchParams.forEach((value, key) => {
-
-        if (filters[key]) {
-
-            if (Array.isArray(filters[key])) {
-
-                filters[key].push(value);
-
-            }
-
-            else {
-
-                filters[key] = [
-
-                    filters[key],
-
-                    value
-
-                ];
-
-            }
-
-        }
-
-        else {
-
-            filters[key] = value;
-
-        }
-
-    });
-
-    const products =
-
-        await getFilteredProducts(filters);
-
-    onApply(products);
-
-    if (!sidebar) {
-
-        setOpen(false);
-
-    }
-
-}
+  }
 
   const mobileClasses = `fixed inset-0 bg-white z-50 flex flex-col transition-transform duration-300
     ${

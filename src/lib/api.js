@@ -1,6 +1,6 @@
 const BASE_URL = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
 
-let cache = null;
+
 
 async function doFetch(path) {
 
@@ -15,33 +15,83 @@ async function doFetch(path) {
     return res.json();
 }
 
+let cache = null;
+let pendingRequest = null;
+
 export async function fetchAllProductsCategoryCollectionsMetalRates(forceRefresh = false) {
 
     if (cache && !forceRefresh) {
+        console.log("✅ From Cache");
         return cache;
     }
 
-    const [
-        products,
-        collections,
-        categories,
-        metalRates
-    ] = await Promise.all([
-        doFetch("/product"),
-        doFetch("/collection"),
-        doFetch("/category"),
-        doFetch("/metal")
-    ]);
+    if (pendingRequest && !forceRefresh) {
+        console.log("⏳ Waiting for existing request");
+        return pendingRequest;
+    }
 
-    cache = {
-        products,
-        collections,
-        categories,
-        metalRates
-    };
+    console.log("🌐 Fetching from API");
 
-    return cache;
+    pendingRequest = (async () => {
+        const [
+            products,
+            collections,
+            categories,
+            metalRates
+        ] = await Promise.all([
+            doFetch("/product"),
+            doFetch("/collection"),
+            doFetch("/category"),
+            doFetch("/metal")
+        ]);
+
+        cache = {
+            products,
+            collections,
+            categories,
+            metalRates
+        };
+
+        pendingRequest = null;
+
+        return cache;
+    })();
+
+    try {
+        return await pendingRequest;
+    } catch (err) {
+        pendingRequest = null;
+        throw err;
+    }
 }
+// export async function fetchAllProductsCategoryCollectionsMetalRates(forceRefresh = false) {
+
+//     if (cache && !forceRefresh) {
+//         return cache;
+//     }
+
+//     const [
+//         products,
+//         collections,
+//         categories,
+//         metalRates
+//     ] = await Promise.all([
+//         doFetch("/product"),
+//         doFetch("/collection"),
+//         doFetch("/category"),
+//         doFetch("/metal")
+//     ]);
+
+//     cache = {
+//         products,
+//         collections,
+//         categories,
+//         metalRates
+//     };
+//     console.log(cache);
+
+//     return cache;
+// }
 
 export async function fetchFilterData() {
 
@@ -107,6 +157,7 @@ export async function getAllCollections() {
 }
 
 export async function getAllCategories() {
+    
 
     const { categories } =
         await fetchAllProductsCategoryCollectionsMetalRates();

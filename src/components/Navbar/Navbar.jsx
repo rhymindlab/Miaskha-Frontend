@@ -17,18 +17,23 @@ export default function Navbar() {
   const [collection, setCollection] = useState();
 
   useEffect(() => {
+    checkLogin(setLoggedIn, setUser);
 
-    checkLogin(setLoggedIn,setUser)
+    async function fetchData() {
+        const [
+            { parentCategories, childCategories },
+            allCollections
+        ] = await Promise.all([
+            getParentChildCategories(),
+            getAllCollections()
+        ]);
 
-    async function fetch(){
-      const {parentCategories:allParentCategories, childCategories:allChildCategories} = await getParentChildCategories();
-      setParentCategory(allParentCategories);
-      setChildCategory(allChildCategories);
-      const allCollections = await getAllCollections();
-      setCollection(allCollections)
+        setParentCategory(parentCategories);
+        setChildCategory(childCategories);
+        setCollection(allCollections);
     }
-    fetch();
 
+    fetchData();
 }, []);
 
 
