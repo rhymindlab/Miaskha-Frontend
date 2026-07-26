@@ -45,7 +45,7 @@ export default function CategorySection() {
             <a
               href={`/jewellery?category=${category.slug}`}
               key={category._id}
-              className="groupd"
+              className="group"
             >
 
               <div className="aspect-square rounded-full overflow-hidden border border-gray-200 bg-white shadow-sm">
