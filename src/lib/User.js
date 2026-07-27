@@ -27,17 +27,18 @@ export async function loginUser({email,setEmail,password,setPassword,setShowLogi
                 }
             );
             const userData = await profileResponse.json();
+            console.log(userData)
             
-            setUser(userData);
+            setUser(userData.user);
             
             alert("Login Successful");
             
             setShowLogin(false);
             setLoggedIn(true);
 
-            await afterLoginSync(userData);
+            await afterLoginSync(userData.user);
             
-            return(userData)
+            return(userData.user)
 
         } else {
 
@@ -90,13 +91,17 @@ export async function checkLogin(setLoggedIn, setUser) {
                 }
             );
 
+            console.log(response);
             if(response.ok) {
 
                 const user = await response.json();
 
                 setLoggedIn(true);
-                setUser(user);
+                setUser(user.user);
 
+            }
+            else{
+                setLoggedIn(false);
             }
         }
 
