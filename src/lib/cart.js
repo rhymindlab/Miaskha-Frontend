@@ -53,6 +53,7 @@ Get Cart
 export async function handlefetchCart(
   user
 ) {
+  
   if (!user?._id) return [];
 
   return await request(
@@ -69,6 +70,7 @@ Add Item
 export async function handleAddCartItem(
   item
 ) {
+  
   return await request("/cart", {
     method: "POST",
     body: JSON.stringify(item),

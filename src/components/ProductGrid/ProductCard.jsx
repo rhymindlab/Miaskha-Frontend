@@ -84,7 +84,7 @@ function ProductCard({ product, metalData }) {
               subtotal,
               gst,
               loggedIn,
-              user
+              user.user
             );
 
             console.log(result);

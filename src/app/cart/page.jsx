@@ -28,7 +28,7 @@ export default function Cart() {
   if (!user) return;
 
   async function fetchCart() {
-    const data = await handlefetchCart(user);
+    const data = await handlefetchCart(user.user);
 
     setCart(data || []);
   }

@@ -22,12 +22,12 @@ export default function useCartCount() {
       }
 
       // Wait until user information is available after login.
-      if (!user?._id) {
+      if (!user.user?._id) {
         return;
       }
 
       try {
-        const updatedCart = await handlefetchCart(user);
+        const updatedCart = await handlefetchCart(user.user);
 
         const quantity = updatedCart.reduce(
           (sum, item) => sum + (item.quantity || 1),
