@@ -53,7 +53,7 @@ Get Cart
 export async function handlefetchCart(
   user
 ) {
-  console.log(user);
+  
   
   if (!user?._id) return [];
 

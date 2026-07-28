@@ -17,41 +17,55 @@ export default function ShippingAddressForm({user, setUser}){
     })
 
     useEffect(() => {
-        if (user) {
-            setFormData({
-                firstName: user.firstName || "",
-                lastName: user.lastName || "",
-                company: user.company || "",
-                country: user.country || "",
-                address: user.address || "",
-                city: user.city || "",
-                state: user.state || "",
-                pinCode: user.pinCode || "",
-                mobile: user.mobile || "",
-                email: user.email || "",
-            });
-        }
-    }, [user]);
+
+    if (user) {
+
+    setFormData({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        company: user.company || "",
+        country: user.country || "",
+        address: user.address || "",
+        city: user.city || "",
+        state: user.state || "",
+        pinCode: user.pinCode || "",
+        mobile: user.mobile || "",
+        email: user.email || "",
+    })};
+}, [user]);
     
     const handleChange = (e) => {
         const { name, value } = e.target;
 
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setFormData((prev) => {
+            const updated = {
+                ...prev,
+                [name]: value,
+            };
+
+
+            return updated;
+        });
     };
 
     async function handleSubmit() {
         try {
-            const data = await updateUserDetails(formData);
-            setUser(data.user)
-            // console.log(user)
+            const data = await updateUserDetails({
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                company: formData.company,
+                country: formData.country,
+                address: formData.address,
+                city: formData.city,
+                state: formData.state,
+                pinCode: formData.pinCode,
+                mobile: formData.mobile,
+            });
+
+            setUser(data.user);
 
 
             alert(data.message);
-
-            console.log(data.user);
         } catch (err) {
             console.error(err);
             alert(err.message);

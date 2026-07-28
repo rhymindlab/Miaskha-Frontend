@@ -29,6 +29,7 @@ export default function OrderHistory({
 
     }, []);
 
+
     if (loading) {
 
         return <div>Loading...</div>;
@@ -39,7 +40,7 @@ export default function OrderHistory({
 
         return (
             <OrderDetails
-                order={selectedOrder}
+                selectedOrder={selectedOrder}
                 goBack={() => setView("list")}
                 track={() => setView("tracking")}
             />

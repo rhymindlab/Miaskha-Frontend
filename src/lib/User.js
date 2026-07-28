@@ -75,105 +75,108 @@ export async function logoutUser(){
     }
 }
 
-export async function checkLogin(setLoggedIn, setUser) {
+    export async function checkLogin(setLoggedIn, setUser) {
 
-    try {
-        const BASE_URL = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
+        try {
+            const BASE_URL = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
 
-        async function doFetch(path,) {
-        
-            const url = `${BASE_URL.replace(/\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`;
+            async function doFetch(path,) {
+            
+                const url = `${BASE_URL.replace(/\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`;
 
-            const response = await fetch(url,
-                {
-                method: "GET",
-                credentials: "include"
+                const response = await fetch(url,
+                    {
+                    method: "GET",
+                    credentials: "include"
+                    }
+                );
+
+                if(response.ok) {
+
+                    const user = await response.json();
+
+                    setLoggedIn(true);
+                    setUser(user.user);
+
                 }
-            );
-
-            console.log(response);
-            if(response.ok) {
-
-                const user = await response.json();
-
-                setLoggedIn(true);
-                setUser(user.user);
-
+                else{
+                    setLoggedIn(false);
+                }
             }
-            else{
-                setLoggedIn(false);
-            }
+
+            doFetch('/profile');
+
+        } catch(err) {
+
+        setLoggedIn(false);
+
         }
 
-        doFetch('/profile');
-
-    } catch(err) {
-
-      setLoggedIn(false);
-
     }
 
-  }
+    export async function signupUser({
+    userName,
+    email,
+    password,
+    setShowSignup,
+    setLoggedIn,
+    setUser,
+    }) {
+    try {
 
-export async function signupUser({
-  userName,
-  email,
-  password,
-  setShowSignup,
-  setLoggedIn,
-  setUser,
-}) {
-  try {
-
-    const response = await fetch(`${BASE_URL}/user/signup`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          userName,
-          email,
-          password,
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (response.ok) {
-
-      alert("Signup Successful");
-
-      setShowSignup(false);
-
-      return data;
-    } else {
-      alert(data.message);
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Something went wrong");
-  }
-}
-
-export async function updateUserDetails(formData) {
-
-    const res = await fetch(`${BASE_URL}/user/update`, {
-        method: "PUT",
-        credentials: "include",
-        headers: {
+        const response = await fetch(`${BASE_URL}/user/signup`,
+        {
+            method: "POST",
+            headers: {
             "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-    });
+            },
+            credentials: "include",
+            body: JSON.stringify({
+            userName,
+            email,
+            password,
+            }),
+        }
+        );
 
-    const data = await res.json();
+        const data = await response.json();
 
-    if (!res.ok) {
-        throw new Error(data.message || "Failed to update profile");
+        if (response.ok) {
+
+        alert("Signup Successful");
+
+        setShowSignup(false);
+
+        return data;
+        } else {
+        alert(data.message);
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Something went wrong");
+    }
     }
 
-    return data;
-}
+    export async function updateUserDetails(formData) {
+        try {
+            const res = await fetch(`${BASE_URL}/user/update`, {
+                method: "PUT",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.message || "Failed to update profile");
+            }
+
+            return data;
+        } catch (err) {
+            console.error(err);
+            throw err;
+        }
+    }

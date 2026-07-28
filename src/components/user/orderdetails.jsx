@@ -1,7 +1,24 @@
 import { ArrowLeft, Truck } from "lucide-react";
+import { getOrder } from "../../lib/order";
+import { useEffect, useState } from "react";
 
-export default function OrderDetails({ order, goBack, track }) {
-    if (!order) return null;
+export default function OrderDetails({ selectedOrder, goBack, track }) {
+    if (!selectedOrder) return null;
+    
+    const [order, setOrder] = useState(selectedOrder);
+
+    useEffect(()=>{
+        async function fetchOrderdetails(id){
+            const res = await getOrder(id);
+            setOrder({...selectedOrder,
+                products: res.order.items,
+                shippingAddress: res.order.shippingAddress,
+                paymentMethod: res.order.paymentMethod,
+            }
+            )
+        }
+        fetchOrderdetails(selectedOrder?._id);
+    }, [selectedOrder?._id])
 
     return (
         <div className="space-y-6">
@@ -87,34 +104,42 @@ export default function OrderDetails({ order, goBack, track }) {
 
                     {order.products?.map((item) => (
 
-                        <div
-                            key={item._id}
+
+                        <a
+                            key={item?.product?._id}
                             className="flex gap-5 border-b pb-4"
+                            href={`/jewellery/${item?.product?._id}`}
                         >
 
                             <img
-                                src={item.product_id?.images?.[0]}
-                                alt={item.product_id?.title}
+                                src={item?.image}
+                                alt={item?.title}
                                 className="w-24 h-24 rounded object-cover border"
                             />
 
                             <div className="flex-1">
 
                                 <h3 className="font-semibold">
-                                    {item.product_id?.title}
+                                    {item?.title}
                                 </h3>
 
                                 <p>
-                                    Quantity : {item.quantity}
+                                    Quantity : {item?.quantity}
                                 </p>
 
                                 <p>
-                                    Price : ₹{item.salePrice}
+                                    Price : ₹{item?.price}
+                                </p>
+                                <p>
+                                    GST : ₹{item?.gst}
+                                </p>
+                                <p>
+                                    Total : ₹{item?.total}
                                 </p>
 
                             </div>
 
-                        </div>
+                        </a>
 
                     ))}
 
