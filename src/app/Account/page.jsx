@@ -7,7 +7,7 @@ import OrderHistory from "../../components/user/orderhistory";
 import Addresses from "../../components/user/address";
 import AccountInfo from "../../components/user/accountinfo";
 
-import { logoutUser } from "../../lib/user";
+import { logoutUser } from "../../lib/User";
 
 import {
     LayoutDashboard,
@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 export default function Account() {
+
     const navigate = useNavigate();
 
     const accountInfo = [
@@ -68,6 +69,7 @@ export default function Account() {
     }
 
     return (
+
         <div className="min-h-screen bg-[#F8F5F2]">
 
             <div className="mx-auto max-w-7xl px-4 py-6 sm:py-10">
@@ -76,29 +78,65 @@ export default function Account() {
 
                 <div className="rounded-2xl sm:rounded-3xl border border-[#ECE6DE] bg-[#F8F5F2] p-5 sm:p-8 lg:p-10">
 
-                    <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[3px] sm:tracking-[4px] text-[#B88A44]">
-                        MIASHKA
-                    </p>
+                    <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
 
-                    <h1 className="mt-4 break-words font-serif text-2xl sm:text-3xl lg:text-4xl text-[#181818]">
-                        Welcome,
-                        <span className="text-[#B88A44]">
-                            {" "}
-                            {user?.firstName || user?.userName}
-                        </span>
-                    </h1>
+                        <div>
 
-                    <p className="mt-4 max-w-2xl text-sm sm:text-base leading-6 sm:leading-7 text-gray-600">
-                        Thank you for choosing MIASHKA. Your account keeps your
-                        personal details, saved addresses, and order history
-                        securely in one place.
-                    </p>
+                            <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[4px] text-[#B88A44]">
+                                MIASHKA
+                            </p>
+
+                            <h1 className="mt-4 break-words font-serif text-2xl sm:text-3xl lg:text-4xl text-[#181818]">
+
+                                Welcome,
+
+                                <span className="text-[#B88A44]">
+
+                                    {" "}
+
+                                    {user?.firstName || user?.userName}
+
+                                </span>
+
+                            </h1>
+
+                            <p className="mt-4 max-w-2xl text-sm sm:text-base leading-6 sm:leading-7 text-gray-600">
+
+                                Thank you for choosing MIASHKA.
+
+                                Your account keeps your orders,
+
+                                addresses and personal details
+
+                                safely in one place.
+
+                            </p>
+
+                        </div>
+
+                        {/* Desktop Logout */}
+
+                        <button
+
+                            onClick={handleLogout}
+
+                            className="hidden lg:flex items-center gap-2 rounded-full border border-[#ECE6DE] bg-white px-6 py-3 transition-all duration-300 hover:border-[#B88A44] hover:shadow-md"
+
+                        >
+
+                            <LogOut size={18} />
+
+                            Logout
+
+                        </button>
+
+                    </div>
 
                 </div>
 
                 {/* Navigation */}
 
-                <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
+                                <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:gap-5 lg:grid-cols-4">
 
                     {tabs.map((item) => {
 
@@ -110,6 +148,7 @@ export default function Account() {
                                 key={item.title}
                                 onClick={() => setTab(item.title)}
                                 className={`
+                                    group
                                     rounded-2xl sm:rounded-3xl
                                     border
                                     p-4 sm:p-6
@@ -120,26 +159,44 @@ export default function Account() {
                                     ${
                                         tab === item.title
                                             ? "border-black bg-black text-white shadow-xl"
-                                            : "border-[#ECE6DE] bg-white hover:-translate-y-1 hover:border-[#B88A44]"
+                                            : "border-[#ECE6DE] bg-white hover:-translate-y-1 hover:border-[#B88A44] hover:shadow-lg"
                                     }
                                 `}
                             >
 
-                                <Icon
-                                    size={24}
-                                    className={
-                                        tab === item.title
-                                            ? "text-white"
-                                            : "text-[#B88A44]"
-                                    }
-                                />
+                                <div
+                                    className={`
+                                        flex h-11 w-11 sm:h-14 sm:w-14
+                                        items-center justify-center
+                                        rounded-2xl
+                                        transition-all
+                                        duration-300
 
-                                <h3 className="mt-4 sm:mt-6 text-base sm:text-lg font-semibold">
+                                        ${
+                                            tab === item.title
+                                                ? "bg-white/10"
+                                                : "bg-[#F8F5F2] group-hover:bg-[#FFF7EC]"
+                                        }
+                                    `}
+                                >
+
+                                    <Icon
+                                        size={22}
+                                        className={
+                                            tab === item.title
+                                                ? "text-white"
+                                                : "text-[#B88A44]"
+                                        }
+                                    />
+
+                                </div>
+
+                                <h3 className="mt-4 sm:mt-6 text-sm sm:text-lg font-semibold leading-6">
                                     {item.title}
                                 </h3>
 
                                 <p
-                                    className={`mt-2 text-xs sm:text-sm ${
+                                    className={`mt-1 sm:mt-2 text-xs sm:text-sm leading-5 ${
                                         tab === item.title
                                             ? "text-gray-300"
                                             : "text-gray-500"
@@ -158,7 +215,7 @@ export default function Account() {
 
                 {/* Content */}
 
-                                <div className="mt-6 sm:mt-10 rounded-2xl sm:rounded-[32px] border border-[#ECE6DE] bg-white p-4 sm:p-6 lg:p-10">
+                <div className="mt-6 sm:mt-10 rounded-2xl sm:rounded-[32px] border border-[#ECE6DE] bg-white p-4 sm:p-6 lg:p-10">
 
                     {tab === accountInfo[0] && (
                         <Dashboard
@@ -192,39 +249,44 @@ export default function Account() {
 
                 </div>
 
-                {/* Logout */}
+                {/* Mobile Logout */}
 
-                <div className="mt-6 sm:mt-8">
+                <div className="mt-6 lg:hidden">
 
                     <button
                         onClick={handleLogout}
                         className="
-                            flex w-full items-center justify-center gap-3
+                            flex
+                            w-full
+                            items-center
+                            justify-center
+                            gap-3
                             rounded-2xl
-                            border border-red-200
+                            border
+                            border-red-200
                             bg-red-50
-                            px-6 py-4
-                            text-sm sm:text-base
+                            px-6
+                            py-4
+                            text-sm
                             font-medium
                             text-red-600
                             transition-all
                             duration-300
                             hover:bg-red-100
-                            hover:shadow-md
                             active:scale-[0.98]
                         "
                     >
 
                         <LogOut size={20} />
 
-                        Log Out
+                        Logout
 
                     </button>
 
                 </div>
-
-            </div>
+                            </div>
 
         </div>
+
     );
 }
