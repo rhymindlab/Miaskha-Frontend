@@ -56,25 +56,27 @@ export async function loginUser({email,setEmail,password,setPassword,setShowLogi
 
 }
 
-export async function logoutUser(){
+export async function logoutUser() {
     try {
-        const BASE_URL = import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
-        const response = await fetch(`${BASE_URL}/logout`,
-            {
-                method: "GET",
-                credentials: "include"
-            });
-        if (response.ok) {
-            alert("Logout Successful");
-            
-        }
-    }catch(error){
-        console.error(error);
+        const BASE_URL =
+            import.meta.env.VITE_BACKEND_API_URL || "http://localhost:8000";
 
+        const response = await fetch(`${BASE_URL}/logout`, {
+            method: "GET",
+            credentials: "include",
+        });
+
+        if (!response.ok) {
+            throw new Error("Logout failed");
+        }
+
+        return true;
+    } catch (error) {
+        console.error(error);
         alert("Something went wrong");
+        return false;
     }
 }
-
     export async function checkLogin(setLoggedIn, setUser) {
 
         try {
