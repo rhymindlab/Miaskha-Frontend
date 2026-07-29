@@ -6,6 +6,7 @@ export function AuthProvider({ children }) {
 
     const [loggedIn, setLoggedIn] = useState(false);
     const [user, setUser] = useState(null);
+    const [showLogin, setShowLogin] = useState(false);
 
     return (
         <AuthContext.Provider
@@ -13,7 +14,9 @@ export function AuthProvider({ children }) {
                 loggedIn,
                 setLoggedIn,
                 user,
-                setUser
+                setUser,
+                showLogin,
+                setShowLogin,
             }}
         >
             {children}

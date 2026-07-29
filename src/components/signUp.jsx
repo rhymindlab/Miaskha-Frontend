@@ -15,14 +15,12 @@ import useAuth from "../hooks/useAuth";
 export default function Signup({
   showSignup,
   setShowSignup,
-  setShowLogin,
 }) {
-  const { setLoggedIn, setUser } = useAuth();
+  const { setLoggedIn, setUser, setShowLogin } = useAuth();
 
   const [formData, setFormData] = useState({
     userName: "",
     email: "",
-    mobile: "",
     password: "",
     confirmPassword: "",
   });
@@ -68,22 +66,25 @@ export default function Signup({
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+      
+      <div className="relative w-full max-w-md rounded-3xl bg-white shadow-2xl overflow-hidden">
 
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden">
+      {/* <div className="relative w-full max-w-md max-h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden"> */}
 
         <div className="h-2 bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-600"></div>
 
         <button
           onClick={() => setShowSignup(false)}
-          className="absolute top-5 right-5 text-gray-500 hover:text-black"
+          className="absolute top-5 right-5 text-gray-500 hover:text-black transition"
         >
           <X size={24} />
         </button>
 
+        {/* <div className="max-h-[calc(90vh-8px)] overflow-y-auto px-6 py-8 sm:px-10"> */}
         <div className="px-10 py-10">
 
           {/* Logo */}
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center">
             <img
               src="/logo.png"
               alt="MIASHKA"
@@ -128,23 +129,6 @@ export default function Signup({
               name="email"
               placeholder="Email Address"
               value={formData.email}
-              onChange={handleChange}
-              className="w-full border rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-yellow-600"
-            />
-          </div>
-
-          {/* Mobile */}
-          <div className="relative mb-4">
-            <Phone
-              className="absolute left-4 top-4 text-gray-400"
-              size={18}
-            />
-
-            <input
-              type="tel"
-              name="mobile"
-              placeholder="Mobile Number"
-              value={formData.mobile}
               onChange={handleChange}
               className="w-full border rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-yellow-600"
             />
@@ -244,7 +228,7 @@ export default function Signup({
           </button>
 
           {/* Divider */}
-          <div className="flex items-center my-7">
+          {/* <div className="flex items-center my-7">
             <div className="flex-1 h-px bg-gray-300"></div>
 
             <span className="px-4 text-gray-400 text-sm">
@@ -252,12 +236,12 @@ export default function Signup({
             </span>
 
             <div className="flex-1 h-px bg-gray-300"></div>
-          </div>
+          </div> */}
 
           {/* Google */}
-          <button className="w-full border rounded-xl py-3 hover:bg-gray-100 transition font-medium">
+          {/* <button className="w-full border rounded-xl py-3 hover:bg-gray-100 transition font-medium">
             Continue with Google
-          </button>
+          </button> */}
 
           {/* Login */}
           <p className="text-center mt-8 text-gray-500">

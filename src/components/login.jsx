@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Eye, EyeOff, X, Mail, Lock } from "lucide-react";
 import { loginUser } from "../lib/User";
 import useAuth from "../hooks/useAuth";
-import logo from "../assets/logo.png";
+
 
 export default function Login({
   showLogin,
@@ -48,7 +48,7 @@ export default function Login({
         {/* Close Button */}
         <button
           onClick={() => setShowLogin(false)}
-          className="absolute top-5 right-5 text-gray-500 hover:text-black transition"
+          className="absolute top-5 z-10 right-5 text-gray-500 hover:text-black transition"
         >
           <X size={24} />
         </button>
@@ -58,7 +58,7 @@ export default function Login({
           {/* Logo */}
           <div className="flex justify-center mb-6">
             <img
-              src={logo}
+              src="./logo.png"
               alt="MIASHKA"
               className="h-20 object-contain"
             />
@@ -151,7 +151,7 @@ export default function Login({
           </button>
 
           {/* Divider */}
-          <div className="flex items-center my-7">
+          {/* <div className="flex items-center my-7">
 
             <div className="flex-1 h-px bg-gray-300"></div>
 
@@ -161,14 +161,14 @@ export default function Login({
 
             <div className="flex-1 h-px bg-gray-300"></div>
 
-          </div>
+          </div> */}
 
           {/* Google */}
-          <button
+          {/* <button
             className="w-full border rounded-xl py-3 hover:bg-gray-100 transition font-medium"
           >
             Continue with Google
-          </button>
+          </button> */}
 
           {/* Signup */}
           <p className="text-center text-gray-500 mt-8">

@@ -9,10 +9,10 @@ import CartItem from "../../components/cart/DesktopCart";
 import MobileCartItem from "../../components/cart/MobileCart";
 import useAuth from "../../hooks/useAuth";
 import { handlefetchCart } from "../../lib/cart";
+import Login from "../../components/login";
 
 export default function Cart() {
-  const {loggedIn, user} = useAuth();
-  
+  const {loggedIn, user,showLogin, setShowLogin} = useAuth();
   const [cart, setCart] = useState([]);
   
   useEffect(() => {
@@ -40,57 +40,66 @@ export default function Cart() {
 
 
   return (
-    <div className="flex lg:flex-row flex-col">
+    <>
+      {showLogin && (
+        <Login
+          onClose={() => setShowLogin(false)}
+        />
+      )}
 
-      <div className="lg:w-2/3 lg:p-10 px-5 py-5 lg:border-r">
 
-        <h1 className="text-3xl font-bold mb-5">
-          My Cart
-        </h1>
+      <div className="flex lg:flex-row flex-col">
 
-        <div className="flex flex-col gap-6">
+        <div className="lg:w-2/3 lg:p-10 px-5 py-5 lg:border-r">
 
-          {cart.length === 0 ? (
+          <h1 className="text-3xl font-bold mb-5">
+            My Cart
+          </h1>
 
-            <p>Cart is empty</p>
+          <div className="flex flex-col gap-6">
 
-          ) : (
+            {cart.length === 0 ? (
 
-            cart.map((product, index) => (
-            <div key={`${product.product_id}-${index}`}>
-              <CartItem
-                product={product}
-                index={index}
-                cart={cart}
-                setCart={setCart}
-                loggedIn={loggedIn}
-                user={user}
-              />
+              <p>Cart is empty</p>
 
-              <MobileCartItem
-                product={product}
-                index={index}
-                cart={cart}
-                setCart={setCart}
-                loggedIn={loggedIn}
-                user={user}
-              />
-            </div>
-            ))
+            ) : (
 
-          )}
+              cart.map((product, index) => (
+              <div key={`${product.product_id}-${index}`}>
+                <CartItem
+                  product={product}
+                  index={index}
+                  cart={cart}
+                  setCart={setCart}
+                  loggedIn={loggedIn}
+                  user={user}
+                />
+
+                <MobileCartItem
+                  product={product}
+                  index={index}
+                  cart={cart}
+                  setCart={setCart}
+                  loggedIn={loggedIn}
+                  user={user}
+                />
+              </div>
+              ))
+
+            )}
+
+          </div>
 
         </div>
+        <div className="w-full lg:block lg:w-1/3 lg:p-10 px-5 py-5 border-t-1 lg:border-0">
+
+          <PriceBreakup cart={cart} user={user} loggedIn={loggedIn} setShowLogin={setShowLogin} />
+
+        </div>
+        
+
 
       </div>
-      <div className="w-full lg:block lg:w-1/3 lg:p-10 px-5 py-5 border-t-1 lg:border-0">
-
-        <PriceBreakup cart={cart} user={user} />
-
-      </div>
-      
-
-
-    </div>
+    </>
   );
 }

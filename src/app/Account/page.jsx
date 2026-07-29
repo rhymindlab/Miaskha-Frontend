@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 export default function Account() {
+    
 
     const navigate = useNavigate();
 

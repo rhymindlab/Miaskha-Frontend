@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from "react";
 
-export default function PriceBreakup({ cart = [], user }) {
+export default function PriceBreakup({ cart = [], user, loggedIn, setShowLogin }) {
   const [paying, setPaying] = useState(false);
+  console.log(loggedIn);
 
   const pricing = useMemo(() => {
     let subtotal = 0;
@@ -43,6 +44,11 @@ export default function PriceBreakup({ cart = [], user }) {
     });
 
   async function handlePayment() {
+    if (!loggedIn) {
+    setShowLogin(true);
+    return;
+  }
+
     if (!cart.length) {
       alert("Your cart is empty");
       return;
@@ -59,11 +65,13 @@ export default function PriceBreakup({ cart = [], user }) {
       pinCode: user?.pinCode || "",
       mobile: user?.mobile || "",
     };
-
-    if (!shippingAddress.firstName || !shippingAddress.mobile) {
-      alert("Please save your shipping address first.");
-      return;
-    }
+    // if(!loggedIn){
+    //   setShowLogin(true);
+    // }
+    // else if (!shippingAddress.firstName || !shippingAddress.mobile) {
+    //   alert("Please save your shipping address first.");
+    //   return;
+    // }
 
     setPaying(true);
 

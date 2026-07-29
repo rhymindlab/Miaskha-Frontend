@@ -16,7 +16,7 @@ import {
 } from "../../lib/api";
 
 export default function Navbar() {
-  const { loggedIn, setLoggedIn, user, setUser } = useAuth();
+  const { loggedIn, setLoggedIn, user, setUser, showLogin, setShowLogin } = useAuth();
 
   const [parentCategory, setParentCategory] = useState([]);
   const [childCategory, setChildCategory] = useState([]);
@@ -25,7 +25,6 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   // Login Modal
-  const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
 
   useEffect(() => {

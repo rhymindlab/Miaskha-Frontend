@@ -1,4 +1,3 @@
-import logo from "../../assets/logo.png";
 import CartIcon from "../cart/cartIcon";
 import LoggedInIcon from "../loggedInIcon";
 
@@ -15,7 +14,7 @@ export default function MobileNavbar({
         {/* Logo */}
         <a href="/" className="flex items-center">
           <img
-            src={logo}
+            src="./logo.png"
             alt="MIASHKA Logo"
             className="h-20 w-auto object-contain"
           />
