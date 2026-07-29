@@ -2,284 +2,142 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import ImageSection from "./ProductImageLeft";
-import ProductDetails from "./product-detail";
-import CustomizationFields from "../customization-fields";
+import useAuth from "../../hooks/useAuth";
 
 import { getMetalRates } from "../../lib/api";
 import { pricedetails } from "../../utils/functions";
 import { handleAddToCart } from "../../utils/cart-functions";
 
-import useAuth from "../../hooks/useAuth";
+import ProductGallery from "./gallery/ProductGallery";
+import ProductInfo from "./info/ProductInfo";
+import ProductDetails from "./details/ProductDetails";
 
 export default function ProductClient({ initialProduct }) {
+  const product = initialProduct;
 
   const { loggedIn, user } = useAuth();
 
-  const product = initialProduct;
-
   const [formData, setFormData] = useState({});
-
   const [metalData, setMetalData] = useState([]);
 
   /*
-  =====================================
-  Default Customization Values
-  =====================================
+  ==========================
+  Default customization
+  ==========================
   */
 
   useEffect(() => {
-
     if (!product) return;
 
     const defaults = {};
 
     product.customizationFields?.forEach((field) => {
-
       if (
-        !field.dependsOn?.field &&
         field.type === "select" &&
-        field.options?.length
+        field.options?.length &&
+        !field.dependsOn?.field
       ) {
-
         defaults[field.name] = field.options[0];
-
       }
-
     });
 
     setFormData((prev) => ({
       ...defaults,
       ...prev,
     }));
-
   }, [product]);
 
   /*
-  =====================================
-  Metal Rates
-  =====================================
+  ==========================
+  Load metal rates
+  ==========================
   */
 
   useEffect(() => {
-
     async function loadRates() {
-
       try {
-
-        const data = await getMetalRates();
-
-        setMetalData(data);
-
-      } catch (err) {
-
-        console.error(err);
-
+        const rates = await getMetalRates();
+        setMetalData(rates);
+      } catch (error) {
+        console.error(error);
       }
-
     }
 
     loadRates();
-
   }, []);
-  
+
   /*
-  =====================================
-  Single Pricing Engine
-  =====================================
+  ==========================
+  Pricing
+  ==========================
   */
-    const pricing = useMemo(() => {
-  
-      return pricedetails(
-        formData,
-        metalData,
-        product
-      );
-  
-    }, [formData, metalData, product]);
-    
-    const {
-   
-      selectedMaterialNotNormalize,
-   
-      selectedPurity,
-   
-      subtotal,
-   
-      gst,
-   
-      total,
-   
-    } = pricing;
+
+  const pricing = useMemo(() => {
+    return pricedetails(
+      formData,
+      metalData,
+      product
+    );
+  }, [formData, metalData, product]);
+
   /*
-  =====================================
-  Product Missing
-  =====================================
+  ==========================
+  Missing Product
+  ==========================
   */
 
   if (!product) {
-
     return (
-      <div className="p-6">
+      <div className="py-32 text-center text-gray-500">
         Product not found.
       </div>
     );
-
   }
 
-
-
   /*
-  =====================================
-  Price Display
-  =====================================
-  */
-
-  const formatPrice = (price) =>
-    `₹ ${Math.round(Number(price || 0)).toLocaleString(
-      "en-IN",
-      {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }
-    )}`;
-
-  const displayPrice =
-    formatPrice(total);
-
-  /*
-  =====================================
-  Render
-  =====================================
+  ==========================
+  Layout
+  ==========================
   */
 
   return (
+    <main className="bg-white">
 
-    <div className="pt-0 pb-5">
+      {/* Hero */}
 
-      <div className="w-full lg:flex lg:items-start">
+      <section className="max-w-10xl mx-auto px-5 lg:px-8 py-12">
 
-        {/* LEFT */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_0.8fr] gap-12 items-start">
 
-        <ImageSection img={product.images} />
+          <ProductGallery
+            images={product.images}
+          />
 
-        {/* RIGHT */}
-
-        <div className="lg:w-1/2 w-full px-4 sm:px-6 lg:pr-16 mt-10 lg:mt-0 lg:py-12">
-
-          <span>
-
-            SKU: {product.sku}
-
-          </span>
-
-          <h1 className="text-4xl mb-2">
-
-            {product.title}
-
-          </h1>
-
-          <div className="mb-6">
-
-            {Number(product.mrp) > Number(total) && (
-              <div className="flex items-center gap-3 mb-1">
-
-                <span className="text-gray-500 line-through text-lg">
-                  ₹ {Number(product.mrp).toLocaleString("en-IN")}
-                </span>
-
-                <span className="bg-green-100 text-green-700 text-sm font-semibold px-2 py-1 rounded">
-                  {Math.round(
-                    ((Number(product.mrp) - Number(subtotal)) / Number(product.mrp)) * 100
-                  )}
-                  % OFF
-                </span>
-
-              </div>
-            )}
-
-  <p className="text-3xl font-bold text-stone-700">
-    ₹ {Math.round(subtotal).toLocaleString("en-IN")}
-  </p>
-
-</div>
-
-          <p className="text-gray-600 mb-4 border-b p-2">
-
-            {product.shortDescription}
-
-          </p>
-
-          <div className="space-y-6">
-
-            <h3 className="text-lg font-medium">
-
-              Customization Options
-
-            </h3>
-
-            <CustomizationFields
-              product={product}
-              formData={formData}
-              setFormData={setFormData}
-            />
-
-            <button
-
-              onClick={() =>
-                handleAddToCart(
-
-                  product,
-
-                  selectedMaterialNotNormalize,
-
-                  selectedPurity,
-
-                  subtotal,
-
-                  gst,
-
-                  loggedIn,
-
-                  user
-
-                )
-              }
-
-              className="w-full bg-black text-white py-3
-              hover:opacity-80 active:scale-95
-              transition"
-
-            >
-
-              Add To Cart
-
-            </button>
-
-          </div>
+          <ProductInfo
+            product={product}
+            pricing={pricing}
+            formData={formData}
+            setFormData={setFormData}
+            loggedIn={loggedIn}
+            user={user}
+            onAddToCart={handleAddToCart}
+          />
 
         </div>
 
-      </div>
+      </section>
 
-      <div className="p-10 w-2/3">
+      {/* Details */}
+
+      <section className="border-t mx-10">
 
         <ProductDetails
-
-          formData={formData}
-
-          metalData={metalData}
-
           product={product}
-
           pricing={pricing}
-
         />
 
-      </div>
+      </section>
 
-    </div>
-
+    </main>
   );
-
 }
