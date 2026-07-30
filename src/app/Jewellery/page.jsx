@@ -29,7 +29,10 @@ export default function JewelleryPage() {
         setCategories(categories);
         setMetalData(metalRates);
       } catch (err) {
-        console.error("Failed to load jewellery:", err);
+        console.error(
+          "Failed to load jewellery:",
+          err
+        );
       } finally {
         setLoading(false);
       }
@@ -37,6 +40,7 @@ export default function JewelleryPage() {
 
     loadData();
   }, []);
+  console.log("Products on /jewellery", products);
 
   return (
     <>
@@ -44,6 +48,7 @@ export default function JewelleryPage() {
         title="Diamond & Gold Jewellery"
         description="Explore Miashka's collection of diamond and gold jewellery, including rings, earrings, necklaces, bracelets and more."
         url="https://www.miashka.com/jewellery"
+        canonical="https://www.miashka.com/jewellery"
         type="website"
       />
 

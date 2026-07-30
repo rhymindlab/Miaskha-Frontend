@@ -2,7 +2,7 @@
 
 import { useNavigate } from "react-router-dom";
 import { Heart, ShieldCheck, Truck, RotateCcw } from "lucide-react";
-import CustomizationFields from "../customization/CustomizationSection";
+import CustomizationSection from "../customization/CustomizationSection";
 
 export default function ProductInfo({
   product,
@@ -93,7 +93,7 @@ export default function ProductInfo({
         </div>
 
         {/* Customization */}
-        <CustomizationFields
+        <CustomizationSection
           product={product}
           formData={formData}
           setFormData={setFormData}

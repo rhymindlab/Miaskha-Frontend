@@ -5,6 +5,7 @@ export default function SEO({
   description,
   image,
   url,
+  canonical,
   type = "website",
   noIndex = false,
 }) {
@@ -33,6 +34,17 @@ export default function SEO({
       />
 
       {/* =========================
+          CANONICAL
+      ========================== */}
+
+      {canonical && (
+        <link
+          rel="canonical"
+          href={canonical}
+        />
+      )}
+
+      {/* =========================
           ROBOTS
       ========================== */}
 
@@ -45,16 +57,25 @@ export default function SEO({
           OPEN GRAPH
       ========================== */}
 
-      <meta property="og:title" content={finalTitle} />
+      <meta
+        property="og:title"
+        content={finalTitle}
+      />
 
       <meta
         property="og:description"
         content={finalDescription}
       />
 
-      <meta property="og:type" content={type} />
+      <meta
+        property="og:type"
+        content={type}
+      />
 
-      <meta property="og:site_name" content={siteName} />
+      <meta
+        property="og:site_name"
+        content={siteName}
+      />
 
       {url && (
         <meta

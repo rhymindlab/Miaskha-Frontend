@@ -32,6 +32,7 @@ export default function CollectionPage() {
         title="Jewellery Collections"
         description="Explore Miashka jewellery collections featuring beautifully crafted diamond and gold jewellery designed for every occasion."
         url="https://www.miashka.com/collections"
+        canonical="https://www.miashka.com/collections"
         type="website"
       />
 
