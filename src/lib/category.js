@@ -21,3 +21,5 @@ export async function handleCategoryFilterData(slug) {
 
   return await response.json();
 }
+
+
