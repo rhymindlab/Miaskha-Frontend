@@ -13,6 +13,7 @@ import WhyChooseMiashka from "../components/home/WhyChooseMiashka/WhyChooseMiash
 import CustomerTestimonials from "../components/home/CustomerTestimonials/CustomerTestimonials";
 import InstagramGallery from "../components/home/Instagram/Instagram";
 import Newsletter from "../components/home/Newsletter/Newsletter";
+import SEO from "../components/SEO/SEO";
 export default function HomePage() {
   const [categories, setCategories] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -71,6 +72,10 @@ export default function HomePage() {
 
   return (
     <>
+    <SEO
+        title="Diamond Jewellery"
+        description="Discover beautifully crafted diamond and gold jewellery at Miashka."
+      />
     <Hero />
     <FeaturedCollections />
     <CategorySection />
