@@ -106,7 +106,7 @@ export async function logoutUser() {
                 }
             }
 
-            doFetch('/profile');
+            await doFetch('/profile');
 
         } catch(err) {
 
@@ -116,69 +116,83 @@ export async function logoutUser() {
 
     }
 
-    export async function signupUser({
-    userName,
+export async function signupUser({
+    firstName,
+    lastName,
     email,
     password,
     setShowSignup,
     setLoggedIn,
     setUser,
-    }) {
+}) {
     try {
-
-        const response = await fetch(`${BASE_URL}/user/signup`,
-        {
+        const response = await fetch(`${BASE_URL}/user/signup`, {
             method: "POST",
             headers: {
-            "Content-Type": "application/json",
+                "Content-Type": "application/json",
             },
             credentials: "include",
             body: JSON.stringify({
-            userName,
-            email,
-            password,
+                firstName,
+                lastName,
+                email,
+                password,
             }),
-        }
-        );
+        });
 
         const data = await response.json();
 
-        if (response.ok) {
+        if (!response.ok) {
+            alert(data.message || "Signup failed");
+            return;
+        }
+
+        // Fetch logged-in user's profile
+        const profileResponse = await fetch(`${BASE_URL}/profile`, {
+            credentials: "include",
+        });
+
+        const userData = await profileResponse.json();
+
+        // Update Auth Context
+        setUser(userData.user);
+        setLoggedIn(true);
+
+        // Sync guest cart if needed
+        await afterLoginSync(userData.user);
 
         alert("Signup Successful");
 
         setShowSignup(false);
 
-        return data;
-        } else {
-        alert(data.message);
-        }
+        return userData.user;
+
     } catch (error) {
         console.error(error);
         alert("Something went wrong");
     }
-    }
+}
 
-    export async function updateUserDetails(formData) {
-        try {
-            const res = await fetch(`${BASE_URL}/user/update`, {
-                method: "PUT",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData),
-            });
+export async function updateUserDetails(formData) {
+    try {
+        const res = await fetch(`${BASE_URL}/user/update`, {
+            method: "PUT",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+        });
 
-            const data = await res.json();
+        const data = await res.json();
 
-            if (!res.ok) {
-                throw new Error(data.message || "Failed to update profile");
-            }
-
-            return data;
-        } catch (err) {
-            console.error(err);
-            throw err;
+        if (!res.ok) {
+            throw new Error(data.message || "Failed to update profile");
         }
+
+        return data;
+    } catch (err) {
+        console.error(err);
+        throw err;
     }
+}

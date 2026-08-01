@@ -2,106 +2,181 @@ import {
     MapPin,
     CalendarDays,
     CheckCircle2,
+    Clock3,
+    Truck,
+    Package,
+    XCircle,
 } from "lucide-react";
 
 export default function TrackingStep({ step, isLast }) {
+
     const formattedDate = step?.date
-        ? new Date(step.date).toLocaleDateString("en-IN", {
+        ? new Date(step.date).toLocaleString("en-IN", {
               day: "numeric",
               month: "short",
               year: "numeric",
-          }) +
-          " • " +
-          new Date(step.date).toLocaleTimeString("en-IN", {
               hour: "2-digit",
               minute: "2-digit",
           })
         : "";
 
+    const status = (step.status || "").toLowerCase();
+
+    let Icon = Package;
+    let circleClass =
+        "bg-[#B88A44] border-[#F8F5F2]";
+    let badgeClass =
+        "bg-[#F8F5F2] text-[#B88A44]";
+
+    if (
+        status.includes("delivered")
+    ) {
+        Icon = CheckCircle2;
+
+        circleClass =
+            "bg-green-600 border-green-100";
+
+        badgeClass =
+            "bg-green-100 text-green-700";
+    }
+
+    else if (
+        status.includes("shipped") ||
+        status.includes("dispatch") ||
+        status.includes("out for delivery")
+    ) {
+        Icon = Truck;
+
+        circleClass =
+            "bg-blue-600 border-blue-100";
+
+        badgeClass =
+            "bg-blue-100 text-blue-700";
+    }
+
+    else if (
+        status.includes("cancel")
+    ) {
+        Icon = XCircle;
+
+        circleClass =
+            "bg-red-600 border-red-100";
+
+        badgeClass =
+            "bg-red-100 text-red-700";
+    }
+
+    else if (
+        status.includes("pending") ||
+        status.includes("processing") ||
+        status.includes("confirmed")
+    ) {
+        Icon = Clock3;
+
+        circleClass =
+            "bg-orange-500 border-orange-100";
+
+        badgeClass =
+            "bg-orange-100 text-orange-700";
+    }
+
     return (
-        <div className="flex gap-3 sm:gap-5">
+
+        <div className="flex gap-5">
 
             {/* Timeline */}
 
             <div className="flex flex-col items-center flex-shrink-0">
 
-                <div className="flex h-9 w-9 sm:h-12 sm:w-12 items-center justify-center rounded-full border-2 sm:border-4 border-[#F8F5F2] bg-[#B88A44] shadow-md">
+                <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-full border-4 shadow-md ${circleClass}`}
+                >
 
-                    <CheckCircle2
-                        size={18}
-                        className="text-white sm:h-[22px] sm:w-[22px]"
+                    <Icon
+                        size={22}
+                        className="text-white"
                     />
 
                 </div>
 
                 {!isLast && (
-                    <div className="mt-2 h-full min-h-16 sm:min-h-20 w-[2px] bg-[#E7D6B8]" />
+
+                    <div className="mt-2 w-[2px] flex-1 min-h-16 bg-[#E7D6B8]" />
+
                 )}
 
             </div>
 
             {/* Card */}
 
-            <div className="flex-1 min-w-0 rounded-3xl border border-[#ECE6DE] bg-white p-4 sm:p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+            <div className="flex-1 rounded-3xl border border-[#ECE6DE] bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
 
-                {/* Header */}
+                <div className="flex flex-col gap-4 lg:flex-row lg:justify-between">
 
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="flex-1">
 
-                    <div className="min-w-0">
-
-                        <h3 className="font-serif text-lg sm:text-xl text-[#181818] break-words">
+                        <span
+                            className={`inline-flex rounded-full px-4 py-1 text-xs font-semibold ${badgeClass}`}
+                        >
                             {step.status}
-                        </h3>
+                        </span>
 
                         {step.location && (
-                            <div className="mt-3 flex items-start gap-2 text-sm text-gray-600">
+
+                            <div className="mt-4 flex items-center gap-2 text-gray-600">
 
                                 <MapPin
                                     size={16}
-                                    className="mt-0.5 flex-shrink-0 text-[#B88A44]"
+                                    className="text-[#B88A44]"
                                 />
 
-                                <span className="break-words">
+                                <span>
+
                                     {step.location}
+
                                 </span>
 
                             </div>
+
                         )}
 
                     </div>
 
                     {formattedDate && (
-                        <div className="inline-flex w-fit max-w-full items-center gap-2 rounded-full bg-[#F8F5F2] px-3 py-2 text-xs sm:text-sm text-gray-600">
+
+                        <div className="inline-flex h-fit items-center gap-2 rounded-full bg-[#F8F5F2] px-4 py-2 text-sm text-gray-600">
 
                             <CalendarDays
                                 size={16}
-                                className="flex-shrink-0 text-[#B88A44]"
+                                className="text-[#B88A44]"
                             />
 
-                            <span className="break-words">
-                                {formattedDate}
-                            </span>
+                            {formattedDate}
 
                         </div>
+
                     )}
 
                 </div>
 
-                {/* Message */}
-
                 {step.message && (
+
                     <div className="mt-5 rounded-2xl bg-[#F8F5F2] p-4">
 
-                        <p className="break-words text-sm leading-6 text-gray-700 sm:text-base sm:leading-7">
+                        <p className="leading-7 text-gray-700">
+
                             {step.message}
+
                         </p>
 
                     </div>
+
                 )}
 
             </div>
 
         </div>
+
     );
+
 }

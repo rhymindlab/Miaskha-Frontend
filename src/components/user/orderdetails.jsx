@@ -1,241 +1,416 @@
+import { useEffect, useState } from "react";
 import {
     ArrowLeft,
-    Truck,
-    CalendarDays,
+    Package,
     CreditCard,
-    BadgeCheck,
-    Hash,
+    MapPin,
+    CalendarDays,
+    Receipt,
+    Truck,
 } from "lucide-react";
+
 import { getOrder } from "../../lib/order";
-import { useEffect, useState } from "react";
+import useAuth from "../../hooks/useAuth";
 
 export default function OrderDetails({
     selectedOrder,
     goBack,
     track,
+    refreshOrders,
 }) {
+    const {user} = useAuth();
+    console.log(user);
+
     const [order, setOrder] = useState(selectedOrder);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!selectedOrder) return;
 
-        async function fetchOrderDetails(id) {
-            const res = await getOrder(id);
+        if (!selectedOrder?._id) return;
 
-            setOrder({
-                ...selectedOrder,
-                products: res.order.items,
-                shippingAddress: res.order.shippingAddress,
-                paymentMethod: res.order.paymentMethod,
-            });
+        async function loadOrder() {
+
+            try {
+
+                const res = await getOrder(
+                    selectedOrder._id
+                );
+                setOrder(res.order);
+
+            } catch (err) {
+
+                console.error(err);
+
+            } finally {
+
+                setLoading(false);
+
+            }
+
         }
 
-        fetchOrderDetails(selectedOrder._id);
+        loadOrder();
+
     }, [selectedOrder]);
 
-    if (!selectedOrder || !order) return null;
+    if (loading) {
 
-    const statusColor = {
-        Delivered: "bg-green-100 text-green-700",
-        Shipped: "bg-blue-100 text-blue-700",
-        Processing: "bg-yellow-100 text-yellow-700",
-        Pending: "bg-orange-100 text-orange-700",
-        Cancelled: "bg-red-100 text-red-700",
+        return (
+
+            <div className="flex min-h-[400px] items-center justify-center">
+
+                <div className="text-center">
+
+                    <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-[#ECE6DE] border-t-[#B88A44]" />
+
+                    <p className="mt-4 text-gray-500">
+
+                        Loading order...
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        );
+
+    }
+
+    const paymentColor = {
+
+        SUCCESS:
+            "bg-green-100 text-green-700",
+
+        PENDING:
+            "bg-yellow-100 text-yellow-700",
+
+        FAILED:
+            "bg-red-100 text-red-700",
+
+        REFUNDED:
+            "bg-gray-100 text-gray-700",
+
     };
 
-    const formattedDate = new Date(order.createdAt).toLocaleDateString(
-        "en-IN",
-        {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-        }
-    ) +
-        " • " +
-        new Date(order.createdAt).toLocaleTimeString("en-IN", {
-            hour: "2-digit",
-            minute: "2-digit",
-        });
+    const statusColor = {
+
+        PLACED:
+            "bg-orange-100 text-orange-700",
+
+        CONFIRMED:
+            "bg-blue-100 text-blue-700",
+
+        PACKED:
+            "bg-indigo-100 text-indigo-700",
+
+        SHIPPED:
+            "bg-sky-100 text-sky-700",
+
+        OUT_FOR_DELIVERY:
+            "bg-purple-100 text-purple-700",
+
+        DELIVERED:
+            "bg-green-100 text-green-700",
+
+        CANCELLED:
+            "bg-red-100 text-red-700",
+
+        RETURNED:
+            "bg-gray-200 text-gray-700",
+
+    };
 
     return (
-        <div className="space-y-5 sm:space-y-8">
 
-            {/* Header */}
+        <div className="space-y-8">
 
-            <div className="rounded-2xl sm:rounded-3xl border border-[#ECE6DE] bg-[#F8F5F2] p-5 sm:p-8">
+            {/* BACK */}
 
-                <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <button
 
-                    <div className="min-w-0 flex-1">
+                onClick={goBack}
 
-                        <button
-                            onClick={goBack}
-                            className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-[#181818] px-4 py-2 text-sm sm:px-5 sm:text-base transition hover:bg-[#181818] hover:text-white"
-                        >
-                            <ArrowLeft size={18} />
-                            Back
-                        </button>
+                className="inline-flex items-center gap-3 rounded-full border border-[#181818] px-6 py-3 transition hover:bg-[#181818] hover:text-white"
 
-                        <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[3px] sm:tracking-[4px] text-[#B88A44]">
-                            MIASHKA
-                        </p>
+            >
 
-                        <h1 className="mt-3 break-words font-serif text-2xl sm:text-3xl lg:text-4xl text-[#181818]">
-                            Order #{order.orderNumber}
-                        </h1>
+                <ArrowLeft size={18} />
 
-                        <div className="mt-4 flex flex-wrap gap-2 sm:gap-3">
+                Back
 
-                            <span
-                                className={`rounded-full px-4 py-2 text-xs sm:text-sm font-semibold ${
-                                    statusColor[order.orderStatus] ||
-                                    "bg-gray-100 text-gray-700"
-                                }`}
-                            >
-                                {order.orderStatus}
-                            </span>
+            </button>
 
-                            <span className="rounded-full border border-[#ECE6DE] bg-white px-4 py-2 text-xs sm:text-sm">
-                                ₹{order.amount}
-                            </span>
+            {/* HERO */}
 
-                        </div>
+            <div className="overflow-hidden rounded-3xl border border-[#ECE6DE] bg-[#F8F5F2]">
+
+                <div className="h-1 bg-[#B88A44]" />
+
+                <div className="p-8">
+
+                    <p className="text-xs uppercase tracking-[4px] text-[#B88A44] font-semibold">
+
+                        MIASHKA
+
+                    </p>
+
+                    <h1 className="mt-3 font-serif text-4xl">
+
+                        Order Details
+
+                    </h1>
+
+                    <p className="mt-4 text-gray-600">
+
+                        Complete information about your jewellery purchase.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            {/* SUMMARY */}
+
+            <div className="grid gap-5 lg:grid-cols-4">
+
+                <div className="rounded-3xl border border-[#ECE6DE] bg-white p-6">
+
+                    <div className="flex items-center gap-3">
+
+                        <Receipt
+                            className="text-[#B88A44]"
+                            size={20}
+                        />
+
+                        <span className="text-gray-500">
+
+                            Order
+
+                        </span>
 
                     </div>
 
-                    <button
-                        onClick={track}
-                        className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-[#181818] px-6 py-3 sm:px-8 sm:py-4 text-sm sm:text-base text-white transition hover:bg-[#B88A44]"
+                    <p className="mt-4 font-semibold text-lg">
+
+                        {order.orderNumber}
+
+                    </p>
+
+                </div>
+
+                <div className="rounded-3xl border border-[#ECE6DE] bg-white p-6">
+
+                    <div className="flex items-center gap-3">
+
+                        <CalendarDays
+                            className="text-[#B88A44]"
+                            size={20}
+                        />
+
+                        <span className="text-gray-500">
+
+                            Date
+
+                        </span>
+
+                    </div>
+
+                    <p className="mt-4 font-semibold">
+
+                        {new Date(
+                            order.createdAt
+                        ).toLocaleDateString(
+                            "en-IN"
+                        )}
+
+                    </p>
+
+                </div>
+
+                <div className="rounded-3xl border border-[#ECE6DE] bg-white p-6">
+
+                    <div className="flex items-center gap-3">
+
+                        <CreditCard
+                            className="text-[#B88A44]"
+                            size={20}
+                        />
+
+                        <span className="text-gray-500">
+
+                            Payment
+
+                        </span>
+
+                    </div>
+
+                    <div
+                        className={`mt-4 inline-flex rounded-full px-4 py-2 text-sm font-semibold ${
+                            paymentColor[
+                                order.paymentStatus
+                            ]
+                        }`}
                     >
-                        <Truck size={18} />
-                        Track Order
-                    </button>
+
+                        {order.paymentStatus}
+
+                    </div>
+
+                </div>
+
+                <div className="rounded-3xl border border-[#ECE6DE] bg-white p-6">
+
+                    <div className="flex items-center gap-3">
+
+                        <Truck
+                            className="text-[#B88A44]"
+                            size={20}
+                        />
+
+                        <span className="text-gray-500">
+
+                            Status
+
+                        </span>
+
+                    </div>
+
+                    <div
+                        className={`mt-4 inline-flex rounded-full px-4 py-2 text-sm font-semibold ${
+                            statusColor[
+                                order.orderStatus
+                            ]
+                        }`}
+                    >
+
+                        {order.orderStatus.replaceAll(
+                            "_",
+                            " "
+                        )}
+
+                    </div>
 
                 </div>
 
             </div>
+                        {/* ==============================
+                PRODUCTS
+            ============================== */}
 
-            {/* Order Information */}
+            <div className="rounded-3xl border border-[#ECE6DE] bg-white overflow-hidden">
 
-            <div className="rounded-2xl sm:rounded-3xl border border-[#ECE6DE] bg-white p-5 sm:p-8">
+                <div className="border-b border-[#ECE6DE] px-8 py-6">
 
-                <h2 className="mb-5 sm:mb-6 font-serif text-xl sm:text-2xl">
-                    Order Information
-                </h2>
+                    <h2 className="font-serif text-2xl text-[#181818]">
 
-                <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3">
+                        Ordered Products
 
-                    <InfoCard
-                        icon={<Hash size={18} />}
-                        label="Order Number"
-                        value={order.orderNumber}
-                    />
-
-                    <InfoCard
-                        icon={<BadgeCheck size={18} />}
-                        label="Payment Status"
-                        value={order.paymentStatus}
-                    />
-
-                    <InfoCard
-                        icon={<CreditCard size={18} />}
-                        label="Payment Method"
-                        value={order.paymentMethod}
-                    />
-
-                    <InfoCard
-                        icon={<CalendarDays size={18} />}
-                        label="Order Date"
-                        value={formattedDate}
-                    />
-
-                    <InfoCard
-                        icon={<Truck size={18} />}
-                        label="Order Status"
-                        value={order.orderStatus}
-                    />
-
-                    <InfoCard
-                        icon={<CreditCard size={18} />}
-                        label="Total Amount"
-                        value={`₹${order.amount}`}
-                    />
+                    </h2>
 
                 </div>
 
-            </div>
+                <div className="divide-y divide-[#ECE6DE]">
 
-            {/* Products */}
+                    {order.items?.map((item) => (
 
-                        <div className="rounded-2xl sm:rounded-3xl border border-[#ECE6DE] bg-white p-5 sm:p-8">
-
-                <h2 className="mb-5 sm:mb-6 font-serif text-xl sm:text-2xl">
-                    Jewellery Purchased
-                </h2>
-
-                <div className="space-y-4 sm:space-y-6">
-
-                    {order.products?.map((item) => (
-
-                        <a
-                            key={item?.product?._id}
-                            href={`/jewellery/${item?.product?._id}`}
-                            className="flex flex-col gap-4 sm:gap-6 rounded-2xl border border-[#ECE6DE] p-4 sm:p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg md:flex-row"
+                        <div
+                            key={item.product?._id || item.product}
+                            className="flex flex-col gap-6 p-6 lg:flex-row"
                         >
 
-                            {/* Product Image */}
+                            <img
+                                src={item.image || "/placeholder.png"}
+                                alt={item.title}
+                                className="h-28 w-28 rounded-2xl object-cover border border-[#ECE6DE]"
+                            />
 
-                            <div className="flex justify-center md:block">
+                            <div className="flex-1">
 
-                                <img
-                                    src={item?.image}
-                                    alt={item?.title}
-                                    className="h-24 w-24 rounded-2xl border object-cover sm:h-32 sm:w-32"
-                                />
+                                <h3 className="text-lg font-semibold">
 
-                            </div>
+                                    {item.title}
 
-                            {/* Product Details */}
-
-                            <div className="min-w-0 flex-1">
-
-                                <h3 className="break-words text-lg sm:text-xl font-semibold text-[#181818]">
-                                    {item?.title}
                                 </h3>
 
-                                {item?.sku && (
-                                    <p className="mt-2 text-xs sm:text-sm text-gray-500 break-all">
-                                        SKU : {item.sku}
-                                    </p>
-                                )}
+                                <p className="mt-2 text-gray-500">
 
-                                <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                    SKU : {item.sku}
 
-                                    <Detail
-                                        label="Quantity"
-                                        value={item?.quantity}
-                                    />
+                                </p>
 
-                                    <Detail
-                                        label="Price"
-                                        value={`₹${item?.price}`}
-                                    />
+                                <div className="mt-4 flex flex-wrap gap-6">
 
-                                    <Detail
-                                        label="GST"
-                                        value={`₹${item?.gst}`}
-                                    />
+                                    <div>
 
-                                    <Detail
-                                        label="Total"
-                                        value={`₹${item?.total}`}
-                                    />
+                                        <p className="text-xs text-gray-500">
+
+                                            Quantity
+
+                                        </p>
+
+                                        <p className="font-semibold">
+
+                                            {item.quantity}
+
+                                        </p>
+
+                                    </div>
+
+                                    <div>
+
+                                        <p className="text-xs text-gray-500">
+
+                                            Price
+
+                                        </p>
+
+                                        <p className="font-semibold">
+
+                                            ₹{Number(item.price).toLocaleString("en-IN")}
+
+                                        </p>
+
+                                    </div>
+
+                                    <div>
+
+                                        <p className="text-xs text-gray-500">
+
+                                            GST
+
+                                        </p>
+
+                                        <p className="font-semibold">
+
+                                            ₹{Number(item.gst).toLocaleString("en-IN")}
+
+                                        </p>
+
+                                    </div>
+
+                                    <div>
+
+                                        <p className="text-xs text-gray-500">
+
+                                            Total
+
+                                        </p>
+
+                                        <p className="font-bold">
+
+                                            ₹{Number(item.total).toLocaleString("en-IN")}
+
+                                        </p>
+
+                                    </div>
 
                                 </div>
 
                             </div>
 
-                        </a>
+                        </div>
 
                     ))}
 
@@ -243,78 +418,322 @@ export default function OrderDetails({
 
             </div>
 
-            {/* Shipping */}
+            {/* ==============================
+                ADDRESSES
+            ============================== */}
 
-            <div className="rounded-2xl sm:rounded-3xl border border-[#ECE6DE] bg-white p-5 sm:p-8">
+            <div className="grid gap-6 lg:grid-cols-2">
 
-                <h2 className="mb-5 sm:mb-6 font-serif text-xl sm:text-2xl">
-                    Shipping Address
-                </h2>
+                <div className="rounded-3xl border border-[#ECE6DE] bg-white p-8">
 
-                <div className="rounded-2xl bg-[#F8F5F2] p-4 sm:p-6 text-sm sm:text-base leading-7 sm:leading-8">
+                    <div className="flex items-center gap-3">
 
-                    <p className="text-base sm:text-lg font-semibold break-words">
-                        {order.shippingAddress?.firstName}{" "}
-                        {order.shippingAddress?.lastName}
-                    </p>
+                        <MapPin
+                            size={20}
+                            className="text-[#B88A44]"
+                        />
 
-                    <p className="break-words">
-                        {order.shippingAddress?.address}
-                    </p>
+                        <h2 className="font-serif text-2xl">
 
-                    <p className="break-words">
-                        {order.shippingAddress?.city},{" "}
-                        {order.shippingAddress?.state}
-                    </p>
+                            Shipping Address
 
-                    <p className="break-words">
-                        {order.shippingAddress?.country}
-                    </p>
+                        </h2>
 
-                    <p>
-                        {order.shippingAddress?.pinCode}
-                    </p>
+                    </div>
 
-                    <p className="break-all">
-                        {order.shippingAddress?.mobile}
+                    <div className="mt-6 space-y-2">
+
+                        <p>
+
+                            <strong>
+
+                                {order.shippingAddress.firstName}{" "}
+                                {order.shippingAddress.lastName}
+
+                            </strong>
+
+                        </p>
+
+                        <p>
+
+                            {order.shippingAddress.address}
+
+                        </p>
+
+                        <p>
+
+                            {order.shippingAddress.city},{" "}
+                            {order.shippingAddress.state}
+
+                        </p>
+
+                        <p>
+
+                            {order.shippingAddress.country} -{" "}
+                            {order.shippingAddress.pinCode}
+
+                        </p>
+
+                        <p>
+
+                            {order.shippingAddress.mobile}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div className="rounded-3xl border border-[#ECE6DE] bg-white p-8">
+
+                    <div className="flex items-center gap-3">
+
+                        <CreditCard
+                            size={20}
+                            className="text-[#B88A44]"
+                        />
+
+                        <h2 className="font-serif text-2xl">
+
+                            Payment Summary
+
+                        </h2>
+
+                    </div>
+
+                    <div className="mt-6 space-y-4">
+
+                        <div className="flex justify-between">
+
+                            <span>
+
+                                Subtotal
+
+                            </span>
+
+                            <strong>
+
+                                ₹{Number(order.subtotal).toLocaleString("en-IN")}
+
+                            </strong>
+
+                        </div>
+
+                        <div className="flex justify-between">
+
+                            <span>
+
+                                GST
+
+                            </span>
+
+                            <strong>
+
+                                ₹{Number(order.gstTotal).toLocaleString("en-IN")}
+
+                            </strong>
+
+                        </div>
+
+                        <div className="flex justify-between">
+
+                            <span>
+
+                                Shipping
+
+                            </span>
+
+                            <strong>
+
+                                ₹{Number(order.shippingCharge).toLocaleString("en-IN")}
+
+                            </strong>
+
+                        </div>
+
+                        <div className="flex justify-between">
+
+                            <span>
+
+                                Discount
+
+                            </span>
+
+                            <strong>
+
+                                ₹{Number(order.discount).toLocaleString("en-IN")}
+
+                            </strong>
+
+                        </div>
+
+                        <div className="border-t pt-4 flex justify-between text-lg font-bold">
+
+                            <span>
+
+                                Grand Total
+
+                            </span>
+
+                            <span>
+
+                                ₹{Number(order.amount).toLocaleString("en-IN")}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+                        {/* ==================================
+                CUSTOMER INFORMATION
+            ================================== */}
+
+            <div className="grid gap-6 lg:grid-cols-2">
+
+                <div className="rounded-3xl border border-[#ECE6DE] bg-white p-8">
+
+                    <h2 className="font-serif text-2xl text-[#181818]">
+
+                        Customer
+
+                    </h2>
+
+                    <div className="mt-6 space-y-3">
+
+                        <div className="flex justify-between">
+
+                            <span className="text-gray-500">
+
+                                Name
+
+                            </span>
+
+                            <strong>
+
+                                {order.customerName ||
+                                    `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`}
+
+                            </strong>
+
+                        </div>
+
+                        <div className="flex justify-between">
+
+                            <span className="text-gray-500">
+
+                                Email
+
+                            </span>
+
+                            <strong>
+
+                                {order.customerEmail || user.email}
+
+                            </strong>
+
+                        </div>
+
+                        <div className="flex justify-between">
+
+                            <span className="text-gray-500">
+
+                                Phone
+
+                            </span>
+
+                            <strong>
+
+                                {order.customerPhone ||
+                                    order.shippingAddress.mobile}
+
+                            </strong>
+
+                        </div>
+
+                        <div className="flex justify-between">
+
+                            <span className="text-gray-500">
+
+                                Payment Method
+
+                            </span>
+
+                            <strong>
+
+                                {order.paymentMethod}
+
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div className="rounded-3xl border border-[#ECE6DE] bg-white p-8">
+
+                    <h2 className="font-serif text-2xl text-[#181818]">
+
+                        Notes
+
+                    </h2>
+
+                    <p className="mt-6 leading-7 text-gray-600">
+
+                        {order.notes
+                            ? order.notes
+                            : "No additional notes for this order."}
+
                     </p>
 
                 </div>
 
             </div>
 
-        </div>
-    );
-}
+            {/* ==================================
+                ACTION BUTTONS
+            ================================== */}
 
-function InfoCard({ icon, label, value }) {
-    return (
-        <div className="rounded-2xl bg-[#F8F5F2] p-4 sm:p-5 transition-all duration-300 hover:shadow-md">
-            <div className="mb-3 flex items-center gap-2 text-[#B88A44]">
-                {icon}
+            <div className="flex flex-wrap justify-end gap-4">
+
+                {order.paymentStatus === "SUCCESS" && (
+
+                    <button
+
+                        onClick={track}
+
+                        className="flex items-center gap-3 rounded-full bg-[#181818] px-8 py-4 font-medium text-white transition hover:bg-[#B88A44]"
+
+                    >
+
+                        <Truck size={18} />
+
+                        Track Order
+
+                    </button>
+
+                )}
+
+                <button
+
+                    onClick={goBack}
+
+                    className="rounded-full border border-[#181818] px-8 py-4 transition hover:bg-[#181818] hover:text-white"
+
+                >
+
+                    Back
+
+                </button>
+
             </div>
 
-            <p className="text-xs sm:text-sm text-gray-500">
-                {label}
-            </p>
-
-            <p className="mt-2 break-words text-sm sm:text-base font-semibold text-[#181818]">
-                {value || "-"}
-            </p>
         </div>
-    );
-}
 
-function Detail({ label, value }) {
-    return (
-        <div className="rounded-xl border border-[#ECE6DE] bg-white p-3 sm:p-4">
-            <p className="text-xs sm:text-sm text-gray-500">
-                {label}
-            </p>
-
-            <p className="mt-1 break-words text-sm sm:text-base font-semibold text-[#181818]">
-                {value ?? "-"}
-            </p>
-        </div>
     );
+
 }

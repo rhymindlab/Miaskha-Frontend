@@ -12,6 +12,7 @@ import Cart from './app/cart/page';
 import CollectionSlug from './app/collections/[slug]/page';
 import CategoryPage from './app/Jewellery/category/page';
 // import CategorySlug from './app/Jewellery/category/[slug]/page';
+import ProtectedRoute from './components/ProtectedRoute';
 
 
 import {BrowserRouter, Routes, Route,} from 'react-router-dom';
@@ -39,7 +40,7 @@ function App() {
         <Route path="/Jewellery/:id" element={<ProductPage />} />
         <Route path="/Jewellery/category" element={<CategoryPage />} />
         {/* <Route path="/Jewellery/category/:slug" element={<CategorySlug />} /> */}
-        <Route path="/Account" element={<Account />} />
+        <Route path="/Account" element={<ProtectedRoute><Account /></ProtectedRoute>}/>
       </Routes>
 
       {/* Common Footer */}

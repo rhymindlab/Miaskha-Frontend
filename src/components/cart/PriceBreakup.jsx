@@ -55,15 +55,27 @@ export default function PriceBreakup({ cart = [], user, loggedIn, setShowLogin }
     }
 
     const shippingAddress = {
-      firstName: user?.firstName || "",
-      lastName: user?.lastName || "",
-      company: user?.company || "",
-      country: user?.country || "",
-      address: user?.address || "",
-      city: user?.city || "",
-      state: user?.state || "",
-      pinCode: user?.pinCode || "",
-      mobile: user?.mobile || "",
+        firstName: user.shippingAddress.firstName,
+        lastName: user.shippingAddress.lastName,
+        company: user.shippingAddress.company,
+        country: user.shippingAddress.country,
+        address: user.shippingAddress.address,
+        city: user.shippingAddress.city,
+        state: user.shippingAddress.state,
+        pinCode: user.shippingAddress.pinCode,
+        mobile: user.shippingAddress.mobile,
+    };
+
+    const billingAddress = {
+        firstName: user.billingAddress.firstName,
+        lastName: user.billingAddress.lastName,
+        company: user.billingAddress.company,
+        country: user.billingAddress.country,
+        address: user.billingAddress.address,
+        city: user.billingAddress.city,
+        state: user.billingAddress.state,
+        pinCode: user.billingAddress.pinCode,
+        mobile: user.billingAddress.mobile,
     };
     // if(!loggedIn){
     //   setShowLogin(true);
@@ -96,6 +108,8 @@ export default function PriceBreakup({ cart = [], user, loggedIn, setShowLogin }
           },
           body: JSON.stringify({
             shippingAddress,
+            billingAddress,
+
           }),
         }
       );

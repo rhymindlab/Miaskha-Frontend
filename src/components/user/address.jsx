@@ -1,144 +1,218 @@
-import { useState } from "react";
-import { Home, MapPinned } from "lucide-react";
-import BillingAddressForm from "./Addressform/billingaddress";
-import ShippingAddressForm from "./Addressform/shippingaddress";
+import { useEffect, useState } from "react";
+import { Save } from "lucide-react";
 
-export default function Addresses({
-    user,
-    setUser,
-    setFormData,
-}) {
-    const [address, setAddress] = useState("Billing Address");
+import AddressForm from "./AddressForm";
+import { updateUserDetails } from "../../lib/User";
 
-    return (
-        <div className="space-y-8">
+export default function Addresses({ user, setUser }) {
 
-            {/* Header */}
+    const emptyAddress = {
+        firstName: "",
+        lastName: "",
+        company: "",
+        country: "",
+        address: "",
+        city: "",
+        state: "",
+        pinCode: "",
+        mobile: "",
+    };
 
-            <div className="rounded-3xl border border-[#ECE6DE] bg-[#F8F5F2] p-8">
+    const [billingAddress, setBillingAddress] = useState(emptyAddress);
+    const [shippingAddress, setShippingAddress] = useState(emptyAddress);
+    const [shippingBackup, setShippingBackup] = useState(emptyAddress);
+    const [sameAsBilling, setSameAsBilling] = useState(true);
 
-                <p className="text-xs font-semibold uppercase tracking-[4px] text-[#B88A44]">
-                    MIASHKA
-                </p>
+    useEffect(() => {
 
-                <h1 className="mt-3 font-serif text-3xl md:text-4xl text-[#181818]">
-                    Saved Addresses
-                </h1>
+        if (!user) return;
 
-                <p className="mt-3 max-w-2xl text-gray-600 leading-7">
-                    Manage your billing and shipping addresses for a faster and
-                    smoother checkout experience.
-                </p>
+        const billing = user.billingAddress || emptyAddress;
+        const shipping = user.shippingAddress || emptyAddress;
 
-            </div>
+        setBillingAddress({
+            ...emptyAddress,
+            ...billing,
+        });
 
-            {/* Address Switch */}
+        setShippingAddress({
+            ...emptyAddress,
+            ...shipping,
+        });
 
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        // IMPORTANT
+        setShippingBackup({
+            ...emptyAddress,
+            ...shipping,
+        });
 
-                <button
-                    onClick={() => setAddress("Billing Address")}
-                    className={`group rounded-3xl border p-6 text-left transition-all duration-300 ${
-                        address === "Billing Address"
-                            ? "border-[#B88A44] bg-[#181818] text-white shadow-xl"
-                            : "border-[#ECE6DE] bg-white hover:-translate-y-1 hover:border-[#B88A44]"
-                    }`}
-                >
-                    <div
-                        className={`flex h-14 w-14 items-center justify-center rounded-full ${
-                            address === "Billing Address"
-                                ? "bg-white/10"
-                                : "bg-[#F8F5F2]"
-                        }`}
-                    >
-                        <Home
-                            size={26}
-                            className={
-                                address === "Billing Address"
-                                    ? "text-white"
-                                    : "text-[#B88A44]"
-                            }
-                        />
-                    </div>
+        setSameAsBilling(user.sameAsBilling ?? true);
 
-                    <h2 className="mt-5 text-xl font-semibold">
-                        Billing Address
-                    </h2>
+    }, [user]);
 
-                    <p
-                        className={`mt-2 text-sm ${
-                            address === "Billing Address"
-                                ? "text-gray-300"
-                                : "text-gray-500"
-                        }`}
-                    >
-                        Used for invoices and billing information.
-                    </p>
-                </button>
+    async function handleSave() {
 
-                <button
-                    onClick={() => setAddress("Shipping Address")}
-                    className={`group rounded-3xl border p-6 text-left transition-all duration-300 ${
-                        address === "Shipping Address"
-                            ? "border-[#B88A44] bg-[#181818] text-white shadow-xl"
-                            : "border-[#ECE6DE] bg-white hover:-translate-y-1 hover:border-[#B88A44]"
-                    }`}
-                >
-                    <div
-                        className={`flex h-14 w-14 items-center justify-center rounded-full ${
-                            address === "Shipping Address"
-                                ? "bg-white/10"
-                                : "bg-[#F8F5F2]"
-                        }`}
-                    >
-                        <MapPinned
-                            size={26}
-                            className={
-                                address === "Shipping Address"
-                                    ? "text-white"
-                                    : "text-[#B88A44]"
-                            }
-                        />
-                    </div>
+        try {
 
-                    <h2 className="mt-5 text-xl font-semibold">
-                        Shipping Address
-                    </h2>
+            const finalShippingAddress = sameAsBilling
+                ? billingAddress
+                : shippingAddress;
 
-                    <p
-                        className={`mt-2 text-sm ${
-                            address === "Shipping Address"
-                                ? "text-gray-300"
-                                : "text-gray-500"
-                        }`}
-                    >
-                        Used for secure delivery of your jewellery.
-                    </p>
-                </button>
+            const data = await updateUserDetails({
+                billingAddress,
+                shippingAddress: finalShippingAddress,
+                sameAsBilling,
+            });
 
-            </div>
+            setUser(data.user);
 
-            {/* Form */}
+            // update backup after successful save
+            setShippingBackup(finalShippingAddress);
 
-            <div className="rounded-3xl border border-[#ECE6DE] bg-white p-6 md:p-8 shadow-sm">
+            alert("Address updated successfully.");
 
-                {address === "Billing Address" && (
-                    <BillingAddressForm
-                        user={user}
-                        setUser={setUser}
-                        setFormData={setFormData}
-                    />
-                )}
+        } catch (err) {
+            console.error(err);
+            alert(err.message || "Something went wrong.");
+        }
+    }
 
-                {address === "Shipping Address" && (
-                    <ShippingAddressForm
-                        user={user}
-                        setUser={setUser}
-                    />
-                )}
+    function handleCheckboxChange(e) {
 
-            </div>
+        const checked = e.target.checked;
+
+        if (checked) {
+
+            // Save current shipping before replacing it
+            setShippingBackup(shippingAddress);
+
+            // Copy billing
+            setShippingAddress({
+                ...billingAddress,
+            });
+
+        } else {
+
+            // Restore original shipping
+            setShippingAddress({
+                ...shippingBackup,
+            });
+
+        }
+
+        setSameAsBilling(checked);
+    }
+
+    function handleBillingChange(updater) {
+
+        setBillingAddress(prev => {
+
+            const next =
+                typeof updater === "function"
+                    ? updater(prev)
+                    : updater;
+
+            if (sameAsBilling) {
+                setShippingAddress(next);
+            }
+
+            return next;
+
+        });
+
+    }return (
+
+    <div className="space-y-10">
+
+        {/* Header */}
+
+        <div className="rounded-3xl border border-[#ECE6DE] bg-[#F8F5F2] p-8">
+
+            <p className="text-xs font-semibold uppercase tracking-[4px] text-[#B88A44]">
+                MIASHKA
+            </p>
+
+            <h1 className="mt-3 font-serif text-3xl text-[#181818]">
+                Saved Addresses
+            </h1>
+
+            <p className="mt-3 text-gray-600">
+                Manage your billing and shipping addresses.
+            </p>
 
         </div>
-    );
+
+        {/* Billing */}
+
+        <div className="rounded-3xl border border-[#ECE6DE] bg-white p-8">
+
+            <AddressForm
+                title="Billing Address"
+                address={billingAddress}
+                setAddress={handleBillingChange}
+            />
+
+        </div>
+
+        {/* Checkbox */}
+
+        <div className="rounded-2xl border border-[#ECE6DE] bg-[#F8F5F2] p-6">
+
+            <label className="flex items-center gap-3 cursor-pointer">
+
+                <input
+                    type="checkbox"
+                    checked={sameAsBilling}
+                    onChange={handleCheckboxChange}
+                    className="h-5 w-5 accent-black"
+                />
+
+                <span className="font-medium text-[#181818]">
+                    Shipping address is same as Billing Address
+                </span>
+
+            </label>
+
+        </div>
+
+        {/* Shipping */}
+
+        <div
+            className={`rounded-3xl border border-[#ECE6DE] bg-white p-8 transition-all duration-300 ${
+                sameAsBilling
+                    ? "opacity-60"
+                    : ""
+            }`}
+        >
+
+            <AddressForm
+                title="Shipping Address"
+                address={shippingAddress}
+                setAddress={setShippingAddress}
+                disabled={sameAsBilling}
+            />
+
+        </div>
+
+        {/* Save */}
+
+        <div className="flex justify-end">
+
+            <button
+                onClick={handleSave}
+                className="flex items-center gap-3 rounded-full bg-[#181818] px-8 py-4 text-white transition-all duration-300 hover:bg-[#B88A44]"
+            >
+
+                <Save size={18} />
+
+                Save Address
+
+            </button>
+
+        </div>
+
+    </div>
+
+);
+
 }

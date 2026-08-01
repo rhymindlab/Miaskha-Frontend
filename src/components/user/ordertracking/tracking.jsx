@@ -10,256 +10,310 @@ import TrackingHeader from "./trackingheader";
 import TrackingTimeline from "./trackingtimeline";
 import ShipmentInfo from "./shipmentinfo";
 
-export default function Tracking({ order, goBack }) {
+export default function Tracking({
+    order,
+    goBack,
+}) {
 
     const [currentOrder, setCurrentOrder] = useState(order);
+
     const [tracking, setTracking] = useState([]);
+
     const [loading, setLoading] = useState(true);
+
     const [error, setError] = useState("");
+
+    async function loadTracking() {
+
+        try {
+
+            setLoading(true);
+
+            setError("");
+
+            const data =
+                await getOrderTracking(
+                    order._id
+                );
+
+            /* ============================
+               Update Timeline
+            ============================ */
+
+            setTracking(
+                Array.isArray(
+                    data?.tracking
+                )
+                    ? data.tracking
+                    : []
+            );
+
+            /* ============================
+               Update Live Order
+            ============================ */
+
+            setCurrentOrder({
+
+                ...order,
+
+                ...data,
+
+                shiprocket: {
+
+                    ...(order.shiprocket || {}),
+
+                    ...(data.shiprocket || {}),
+
+                },
+
+            });
+
+        } catch (err) {
+
+            console.error(err);
+
+            setError(
+                err.message ||
+                "Unable to load tracking."
+            );
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    }
 
     useEffect(() => {
 
         if (!order?._id) return;
 
-        let cancelled = false;
+        loadTracking();
 
-        async function fetchTracking() {
+        const interval =
+            setInterval(
+                loadTracking,
+                30000
+            );
 
-            try {
+        return () =>
+            clearInterval(interval);
 
-                setLoading(true);
-                setError("");
+    }, [order]);
 
-                const data = await getOrderTracking(
-                    order._id
-                );
-
-                if (cancelled) return;
-
-                /* ==========================================
-                   TRACKING TIMELINE
-                ========================================== */
-
-                setTracking(
-                    Array.isArray(data?.tracking)
-                        ? data.tracking
-                        : []
-                );
-
-                /* ==========================================
-                   UPDATE ORDER WITH LIVE DATA
-
-                   Backend returns:
-                   orderStatus
-                   shiprocket
-                ========================================== */
-
-                setCurrentOrder((previousOrder) => ({
-                    ...previousOrder,
-
-                    orderStatus:
-                        data?.orderStatus ||
-                        previousOrder?.orderStatus,
-
-                    shiprocket: {
-                        ...(previousOrder?.shiprocket || {}),
-                        ...(data?.shiprocket || {}),
-                    },
-                }));
-
-            } catch (err) {
-
-                console.error(
-                    "Tracking fetch error:",
-                    err
-                );
-
-                if (!cancelled) {
-                    setError(
-                        err?.message ||
-                        "Unable to load tracking information."
-                    );
-                }
-
-            } finally {
-
-                if (!cancelled) {
-                    setLoading(false);
-                }
-
-            }
-
-        }
-
-        fetchTracking();
-
-        return () => {
-            cancelled = true;
-        };
-
-    }, [order?._id]);
-
-    /* ==========================================
+    /* ============================
        LOADING
-    ========================================== */
+    ============================ */
 
     if (loading) {
 
         return (
-            <div className="rounded-2xl border border-[#ECE6DE] bg-white p-6 shadow-sm sm:rounded-3xl sm:p-14">
 
-                <div className="flex flex-col items-center justify-center text-center">
+            <div className="rounded-3xl border border-[#ECE6DE] bg-white p-14">
 
-                    <div className="flex h-14 w-14 animate-pulse items-center justify-center rounded-full bg-[#F8F5F2] sm:h-16 sm:w-16">
+                <div className="flex flex-col items-center">
+
+                    <div className="flex h-16 w-16 animate-pulse items-center justify-center rounded-full bg-[#F8F5F2]">
 
                         <PackageCheck
+                            size={28}
                             className="text-[#B88A44]"
-                            size={26}
                         />
 
                     </div>
 
-                    <h2 className="mt-5 font-serif text-xl text-[#181818] sm:text-2xl">
-                        Tracking Your Jewellery
+                    <h2 className="mt-5 font-serif text-2xl">
+
+                        Loading Tracking...
+
                     </h2>
 
-                    <p className="mt-3 text-sm text-gray-500 sm:text-base">
-                        Fetching the latest shipment updates...
+                    <p className="mt-3 text-gray-500">
+
+                        Please wait while we fetch
+                        the latest shipment updates.
+
                     </p>
 
                 </div>
 
             </div>
+
         );
+
     }
 
-    /* ==========================================
-       PAGE
-    ========================================== */
-
     return (
-        <div className="space-y-5 sm:space-y-8">
 
-            {/* ======================================
-                BACK
-            ====================================== */}
+        <div className="space-y-8">
+
+            {/* Back Button */}
 
             <button
-                type="button"
+
                 onClick={goBack}
-                className="
-                    inline-flex
-                    w-fit
-                    items-center
-                    gap-2
-                    rounded-full
-                    border
-                    border-[#181818]
-                    px-4
-                    py-2.5
-                    text-sm
-                    transition-all
-                    duration-300
-                    hover:bg-[#181818]
-                    hover:text-white
-                    sm:gap-3
-                    sm:px-6
-                    sm:py-3
-                    sm:text-base
-                "
+
+                className="inline-flex items-center gap-3 rounded-full border border-[#181818] px-6 py-3 transition hover:bg-[#181818] hover:text-white"
+
             >
-                <ArrowLeft
-                    size={18}
-                    className="shrink-0"
-                />
+
+                <ArrowLeft size={18} />
 
                 Back to Order
+
             </button>
 
-            {/* ======================================
-                HERO
-            ====================================== */}
+            {/* Hero */}
 
-            <div className="overflow-hidden rounded-2xl border border-[#ECE6DE] bg-[#F8F5F2] sm:rounded-3xl">
+            <div className="overflow-hidden rounded-3xl border border-[#ECE6DE] bg-[#F8F5F2]">
 
                 <div className="h-1 bg-[#B88A44]" />
 
-                <div className="p-5 sm:p-10">
+                <div className="p-8">
 
-                    <p className="text-[11px] font-semibold uppercase tracking-[3px] text-[#B88A44] sm:text-xs sm:tracking-[4px]">
+                    <p className="text-xs font-semibold uppercase tracking-[4px] text-[#B88A44]">
+
                         MIASHKA
+
                     </p>
 
-                    <h1 className="mt-3 font-serif text-3xl text-[#181818] sm:text-4xl">
+                    <h1 className="mt-3 font-serif text-4xl">
+
                         Order Tracking
+
                     </h1>
 
-                    <p className="mt-4 max-w-3xl text-sm leading-6 text-gray-600 sm:text-base sm:leading-7">
-                        Follow every stage of your jewellery's journey
-                        from our workshop to your doorstep. We keep you
-                        informed at every milestone.
+                    <p className="mt-4 max-w-3xl text-gray-600">
+
+                        Follow every stage of your
+                        jewellery's journey from our
+                        workshop to your doorstep.
+
                     </p>
 
                 </div>
 
             </div>
 
-            {/* ======================================
+                        {/* ============================
                 ERROR
-            ====================================== */}
+            ============================ */}
 
             {error && (
-                <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 sm:p-5">
-                    {error}
+
+                <div className="rounded-2xl border border-red-200 bg-red-50 p-5">
+
+                    <p className="text-sm text-red-700">
+
+                        {error}
+
+                    </p>
+
                 </div>
+
             )}
 
-            {/* ======================================
+            {/* ============================
                 ORDER HEADER
-
-                IMPORTANT:
-                Use currentOrder, not original order.
-            ====================================== */}
+            ============================ */}
 
             <TrackingHeader
                 order={currentOrder}
             />
 
-            {/* ======================================
+            {/* ============================
                 SHIPMENT INFORMATION
-
-                currentOrder now contains:
-                currentOrder.shiprocket.courierName
-                currentOrder.shiprocket.awbCode
-                currentOrder.shiprocket.trackingUrl
-                currentOrder.shiprocket.currentStatus
-            ====================================== */}
+            ============================ */}
 
             <ShipmentInfo
                 order={currentOrder}
             />
 
-            {/* ======================================
+            {/* ============================
+                QUICK STATUS CARDS
+            ============================ */}
+
+            <div className="grid gap-5 md:grid-cols-3">
+
+                <div className="rounded-3xl border border-[#ECE6DE] bg-white p-6">
+
+                    <p className="text-xs uppercase tracking-[3px] text-[#B88A44]">
+
+                        Current Status
+
+                    </p>
+
+                    <h3 className="mt-4 text-xl font-semibold text-[#181818]">
+
+                        {currentOrder.orderStatus?.replaceAll("_", " ")}
+
+                    </h3>
+
+                </div>
+
+                <div className="rounded-3xl border border-[#ECE6DE] bg-white p-6">
+
+                    <p className="text-xs uppercase tracking-[3px] text-[#B88A44]">
+
+                        Courier
+
+                    </p>
+
+                    <h3 className="mt-4 text-xl font-semibold text-[#181818]">
+
+                        {currentOrder.shiprocket?.courierName ||
+                            "Awaiting Assignment"}
+
+                    </h3>
+
+                </div>
+
+                <div className="rounded-3xl border border-[#ECE6DE] bg-white p-6">
+
+                    <p className="text-xs uppercase tracking-[3px] text-[#B88A44]">
+
+                        AWB Number
+
+                    </p>
+
+                    <h3 className="mt-4 break-all text-lg font-semibold text-[#181818]">
+
+                        {currentOrder.shiprocket?.awbCode ||
+                            "Not Generated"}
+
+                    </h3>
+
+                </div>
+
+            </div>
+
+            {/* ============================
                 TIMELINE
-            ====================================== */}
+            ============================ */}
 
-            <div className="overflow-hidden rounded-2xl border border-[#ECE6DE] bg-white shadow-sm sm:rounded-3xl">
+            <div className="overflow-hidden rounded-3xl border border-[#ECE6DE] bg-white shadow-sm">
 
-                <div className="border-b border-[#ECE6DE] px-5 py-5 sm:px-8 sm:py-6">
+                <div className="border-b border-[#ECE6DE] px-8 py-6">
 
-                    <h2 className="font-serif text-xl text-[#181818] sm:text-2xl">
+                    <h2 className="font-serif text-2xl text-[#181818]">
+
                         Shipment Journey
+
                     </h2>
 
-                    <p className="mt-2 text-sm text-gray-500 sm:text-base">
-                        Latest updates from our delivery partner.
+                    <p className="mt-2 text-gray-500">
+
+                        Every update from MIASHKA
+                        and the courier partner
+                        appears here.
+
                     </p>
 
                 </div>
 
-                <div className="p-4 sm:p-8">
-
-                    {tracking.length > 0 ? (
+                <div className="p-8">
+                                        {tracking.length > 0 ? (
 
                         <TrackingTimeline
                             tracking={tracking}
@@ -267,24 +321,30 @@ export default function Tracking({ order, goBack }) {
 
                     ) : (
 
-                        <div className="flex flex-col items-center py-10 text-center sm:py-14">
+                        <div className="flex flex-col items-center py-14 text-center">
 
-                            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#F8F5F2] sm:h-20 sm:w-20">
+                            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#F8F5F2]">
 
                                 <PackageCheck
+                                    size={32}
                                     className="text-[#B88A44]"
-                                    size={30}
                                 />
 
                             </div>
 
-                            <h3 className="mt-5 font-serif text-xl text-[#181818] sm:text-2xl">
-                                Tracking Not Available
+                            <h3 className="mt-6 font-serif text-2xl text-[#181818]">
+
+                                Tracking Not Available Yet
+
                             </h3>
 
-                            <p className="mt-3 max-w-md text-sm leading-6 text-gray-500 sm:text-base sm:leading-7">
-                                Tracking updates will appear here once
-                                the courier begins processing your shipment.
+                            <p className="mt-3 max-w-lg text-gray-500 leading-7">
+
+                                Your jewellery is currently being prepared.
+                                Tracking updates will automatically appear
+                                here once Shiprocket starts processing
+                                your shipment.
+
                             </p>
 
                         </div>
@@ -295,6 +355,35 @@ export default function Tracking({ order, goBack }) {
 
             </div>
 
+            {/* ============================
+                LAST UPDATED
+            ============================ */}
+
+            {currentOrder.shiprocket?.lastSyncedAt && (
+
+                <div className="text-center">
+
+                    <p className="text-sm text-gray-500">
+
+                        Last Updated :
+
+                        {" "}
+
+                        {new Date(
+                            currentOrder.shiprocket.lastSyncedAt
+                        ).toLocaleString("en-IN", {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                        })}
+
+                    </p>
+
+                </div>
+
+            )}
+
         </div>
+
     );
+
 }

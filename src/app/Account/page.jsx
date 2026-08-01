@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect} from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 
 import Dashboard from "../../components/user/dashboard";
@@ -18,9 +18,9 @@ import {
 } from "lucide-react";
 
 export default function Account() {
-    
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     const accountInfo = [
         "Dashboard",
@@ -55,7 +55,13 @@ export default function Account() {
     const { user, setUser } = useAuth();
 
     const [selectedOrder, setSelectedOrder] = useState(null);
-    const [tab, setTab] = useState(accountInfo[0]);
+    const [tab, setTab] = useState(location.state?.tab || accountInfo[0]);
+
+    useEffect(() => {
+        if (location.state?.tab) {
+            setTab(location.state.tab);
+        }
+    }, [location.state]);
 
     async function handleLogout() {
         const success = await logoutUser();
@@ -238,6 +244,7 @@ export default function Account() {
                         <Addresses
                             user={user}
                             setUser={setUser}
+                            defaultAddress={location.state?.address}
                         />
                     )}
 
