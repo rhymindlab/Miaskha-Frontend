@@ -23,7 +23,7 @@ function ProductCard({ product, metalData }) {
   const pricing = useMemo(() => {
     return pricedetails(formData, metalData, product);
   }, [formData, metalData, product]);
-  console.log('Pricing',pricing)
+  console.log('Pricing',pricing);
 
   const {
     selectedMaterialNotNormalize,

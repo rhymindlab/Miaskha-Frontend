@@ -24,6 +24,8 @@ export function pricedetails(
 
   formData = formData || {};
   product = product || {};
+  console.log("formData", formData);
+  console.log("product", product);
   metalData = Array.isArray(metalData) ? metalData : [];
 
   const pricing = product.pricing || {};
@@ -32,26 +34,17 @@ export function pricedetails(
   // Selected Material / Purity
   // ----------------------------------
 
-  const selectedMaterialNotNormalize =
-    formData.Material ||
-    product.metalType ||
-    "";
+  const selectedMaterialNotNormalize = formData.Material || product.metalType || "";
 
-  const selectedMaterial =
-    normalizeMetal(selectedMaterialNotNormalize);
+  const selectedMaterial = normalizeMetal(selectedMaterialNotNormalize);
 
-  const selectedPurity =
-    formData["Gold Purity"] ||
-    product.purity ||
-    "";
+  const selectedPurity = formData["Gold Purity"] || product.purity || "";
 
   // ----------------------------------
   // Metal Rate
   // ----------------------------------
 
-  const metalRateObj =
-    metalData
-      .filter((item) => item != null)
+  const metalRateObj = metalData.filter((item) => item != null)
       .find(
         (item) =>
           item.metalType === selectedMaterial &&
@@ -67,20 +60,16 @@ export function pricedetails(
   let metalPrice = 0;
 
   if (pricing.dynamicMetal) {
-    metalPrice =
-      num(product.metalWeight) *
-      metalRate;
+    metalPrice = num(product.metalWeight) * metalRate;
   }
-
+  
   // ----------------------------------
   // Stone Price
   // ----------------------------------
 
   let stonePrice = 0;
-
-  const stones = Array.isArray(product.stones)
-    ? product.stones
-    : [];
+  
+  const stones = Array.isArray(product.stones) ? product.stones : [];
 
   for (const stone of stones) {
 
@@ -95,19 +84,20 @@ export function pricedetails(
     }
 
     if (stone.pricingType === "perCarat") {
-
-      stonePrice +=
-        num(stone.weight) *
-        num(stone.price);
-
+      
+      stonePrice += num(stone.weight) * num(stone.price);
+      
     } else {
-
-      stonePrice +=
-        num(stone.price);
-
+      
+      stonePrice += num(stone.price);
+      
     }
-
+    
   }
+  let stoneDiscount = product.stoneDiscount || 0
+
+  let afterDiscountStonePrice = stonePrice - stonePrice * (num(stoneDiscount) / 100);;
+
 
   // ----------------------------------
   // Making Charges
@@ -123,43 +113,55 @@ export function pricedetails(
 
       case "percentage":
 
-        makingCharges =
-          metalPrice *
-          (num(making.value) / 100);
+        makingCharges = metalPrice * (num(making.value) / 100);
 
         break;
 
       case "perGram":
 
-        makingCharges =
-          num(making.value) *
-          num(product.metalWeight);
+        makingCharges = num(making.value) * num(product.metalWeight);
 
         break;
 
       case "fixed":
       default:
 
-        makingCharges =
-          num(making.value);
+        makingCharges = num(making.value);
 
     }
 
   } else {
 
-    makingCharges =
-      num(making.value);
+    makingCharges = num(making.value);
 
   }
+
+  let productDiscount = product.productDiscount || 0
+
+  let makingDiscountType = making.discount?.type || "fixed";
+  let makingDiscount = making.discount?.value || 0;
+
+  let afterDiscountMakingCharge = 0;
+
+  if (makingDiscountType === "fixed") {
+
+    afterDiscountMakingCharge = makingCharges - makingDiscount;
+
+  }
+  else{
+
+    afterDiscountMakingCharge = makingCharges - makingCharges * (num(makingDiscount) / 100);  
+
+  }
+
+   
+
 
   // ----------------------------------
   // Dynamic Subtotal
   // ----------------------------------
 
-  const dynamicSubtotal =
-    metalPrice +
-    stonePrice +
-    makingCharges;
+  const dynamicSubtotal = metalPrice + afterDiscountStonePrice + afterDiscountMakingCharge;
 
   // ----------------------------------
   // Pricing Mode
@@ -171,43 +173,38 @@ export function pricedetails(
 
     case "fixed":
 
-      subtotal =
-        num(pricing.fixedPrice);
+      subtotal = num(pricing.fixedPrice);
 
       break;
 
     case "manual":
 
-      subtotal =
-        num(product.salePrice) ||
-        num(product.mrp) ||
-        dynamicSubtotal;
+      subtotal = num(product.salePrice) || num(product.mrp) || dynamicSubtotal;
 
       break;
 
     case "dynamic":
     default:
 
-      subtotal =
-        dynamicSubtotal;
+      subtotal = dynamicSubtotal;
 
       break;
 
   }
 
+  let afterDiscountSubTotal = subtotal - subtotal * (num(productDiscount) / 100);
+
   // ----------------------------------
   // GST
   // ----------------------------------
 
-  const gst =
-    subtotal * 0.03;
+  const gst = afterDiscountSubTotal * 0.03;
 
   // ----------------------------------
   // Total
   // ----------------------------------
 
-  const total =
-    subtotal + gst;
+  const total = afterDiscountSubTotal + gst;
 
   // ----------------------------------
   // Return
@@ -227,9 +224,21 @@ export function pricedetails(
 
     stonePrice,
 
+    afterDiscountStonePrice,
+
+    stoneDiscount,
+
     makingCharges,
 
+    afterDiscountMakingCharge,
+
+    makingDiscount,
+
     subtotal,
+
+    afterDiscountSubTotal,
+
+    productDiscount,
 
     gst,
 

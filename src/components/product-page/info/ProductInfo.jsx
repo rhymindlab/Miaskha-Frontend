@@ -20,16 +20,16 @@ export default function ProductInfo({
     gst,
     selectedMaterialNotNormalize,
     selectedPurity,
+    productDiscount,
+    total,
   } = pricing;
 
   const formatPrice = (price) =>
     `₹ ${Math.round(Number(price || 0)).toLocaleString("en-IN")}`;
 
   const discount =
-    Number(product?.mrp) > subtotal
-      ? Math.round(
-          ((Number(product.mrp) - subtotal) / Number(product.mrp)) * 100
-        )
+    Number(productDiscount) > 0
+      ? productDiscount
       : 0;
 
   const handleAddToCart = async () => {
@@ -84,7 +84,7 @@ export default function ProductInfo({
           )}
 
           <h2 className="text-5xl font-semibold text-neutral-900">
-            {formatPrice(subtotal)}
+            {formatPrice(total)}
           </h2>
 
           <p className="text-neutral-500 mt-2">

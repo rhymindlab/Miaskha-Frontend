@@ -2,16 +2,29 @@
 
 export default function PriceBreakup({ pricing = {}, product = {} }) {
   const {
-    selectedMaterial,
-    selectedPurity,
+    selectedMaterial = "",
+    selectedPurity = "",
+
     metalPrice = 0,
+
     stonePrice = 0,
+    stoneDiscount = 0,
+    afterDiscountStonePrice = 0,
+
     makingCharges = 0,
+    makingDiscount = 0,
+    afterDiscountMakingCharge = 0,
+
     subtotal = 0,
+    productDiscount = 0,
+    afterDiscountSubTotal = 0,
+
     gst = 0,
     total = 0,
   } = pricing;
-
+  
+  const p = pricing;
+  console.log(p);
   const formatPrice = (value = 0) =>
     `₹ ${Math.round(Number(value)).toLocaleString("en-IN")}`;
 
@@ -25,79 +38,110 @@ export default function PriceBreakup({ pricing = {}, product = {} }) {
     stonePrice > 0 && {
       title: "Stone Charges",
       subtitle: product?.stoneType || "Stone",
-      value: stonePrice,
+      original: stonePrice,
+      final: afterDiscountStonePrice,
+      discount: stoneDiscount,
     },
 
     makingCharges > 0 && {
       title: "Making Charges",
       subtitle: "Labour & Craftsmanship",
-      value: makingCharges,
+      original: makingCharges,
+      final: afterDiscountMakingCharge,
+      discount: makingDiscount,
     },
 
     {
-      title: metalPrice > 0 ? "Subtotal" : "Product Price",
-      subtitle:
-        [
-          metalPrice > 0 && "Metal",
-          stonePrice > 0 && "Stone",
-          makingCharges > 0 && "Making",
-        ]
-          .filter(Boolean)
-          .join(" + ") || "Base Price",
+      subtitle: "Sub Total",
       value: subtotal,
     },
 
+    productDiscount > 0 && {
+      subtitle: `${productDiscount}% OFF`,
+      original: subtotal,
+      final: afterDiscountSubTotal,
+      discount: productDiscount,
+      isProductDiscount: true,
+    },
+    productDiscount > 0 && {
+      subtitle: "New Sub Total",
+      value: afterDiscountSubTotal,
+    },
+
     {
-      title: "GST",
-      subtitle: "Tax Included",
+      title: "GST (3%)",
+      subtitle: "Tax",
       value: gst,
     },
   ].filter(Boolean);
 
   return (
-    <div className="mt-6 overflow-hidden border border-neutral-200 bg-white">
+    <div className="mt-6 overflow-hidden rounded-lg border border-neutral-200 bg-white">
 
       {/* Header */}
-      <div className="px-6 py-4 border-b bg-neutral-50">
-        <h2 className="text-2xl font-semibold text-neutral-900">
+      <div className="border-b bg-neutral-50 px-6 py-4">
+        <h2 className="text-xl font-semibold text-neutral-900">
           Price Breakdown
         </h2>
 
         <p className="mt-1 text-sm text-neutral-500">
-          Detailed pricing information
+          Transparent pricing details
         </p>
       </div>
 
       {/* Body */}
-      <div className="p-6 space-y-4">
+      <div className="divide-y divide-neutral-200">
 
-        {rows.map((row, index) => (
+        {rows.map((row) => (
           <div
             key={row.title}
-            className={`flex items-center justify-between ${
-              index !== rows.length - 1 ? "border-b pb-3" : ""
-            }`}
+            className="flex items-center justify-between px-6 py-4"
           >
             <div>
               <p className="text-sm text-neutral-500">
                 {row.title}
               </p>
 
-              <h3 className="font-medium text-neutral-900">
+              <p className="text-base font-medium text-neutral-900">
                 {row.subtitle}
-              </h3>
+              </p>
             </div>
 
-            <span className="text-lg font-semibold text-neutral-900">
-              {formatPrice(row.value)}
-            </span>
+            {/* Discounted Price */}
+            {row.discount > 0 ? (
+              <div className="text-right">
+
+                <div className="flex items-center justify-end gap-2">
+
+                  <span className="text-sm text-neutral-400 line-through">
+                    {formatPrice(row.original)}
+                  </span>
+
+                  <span className="text-lg font-semibold text-neutral-900">
+                    {formatPrice(row.final)}
+                  </span>
+
+                </div>
+
+                <span className="text-sm font-medium text-green-600">
+                  ({row.discount}% OFF)
+                </span>
+
+              </div>
+            ) : (
+              <span className="text-lg font-semibold text-neutral-900">
+                {formatPrice(row.value)}
+              </span>
+            )}
           </div>
         ))}
 
         {/* Total */}
-        <div className="flex items-center justify-between pt-4 border-t border-neutral-200">
+
+        <div className="flex items-center justify-between bg-neutral-50 px-6 py-5">
 
           <div>
+
             <p className="text-sm text-neutral-500">
               Final Payable Amount
             </p>
@@ -105,6 +149,7 @@ export default function PriceBreakup({ pricing = {}, product = {} }) {
             <h2 className="text-2xl font-bold text-neutral-900">
               Total
             </h2>
+
           </div>
 
           <span className="text-3xl font-bold text-neutral-900">
