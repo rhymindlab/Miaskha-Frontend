@@ -22,6 +22,8 @@ export default function PriceBreakup({ pricing = {}, product = {} }) {
     gst = 0,
     total = 0,
   } = pricing;
+
+  
   
   const p = pricing;
   console.log(p);
@@ -46,6 +48,7 @@ export default function PriceBreakup({ pricing = {}, product = {} }) {
     makingCharges > 0 && {
       title: "Making Charges",
       subtitle: "Labour & Craftsmanship",
+      value: afterDiscountMakingCharge,
       original: makingCharges,
       final: afterDiscountMakingCharge,
       discount: makingDiscount,
@@ -92,9 +95,9 @@ export default function PriceBreakup({ pricing = {}, product = {} }) {
       {/* Body */}
       <div className="divide-y divide-neutral-200">
 
-        {rows.map((row) => (
+        {rows.map((row, index) => (
           <div
-            key={row.title}
+            key={`${row.title || row.subtitle}-${index}`}
             className="flex items-center justify-between px-6 py-4"
           >
             <div>

@@ -24,8 +24,7 @@ export function pricedetails(
 
   formData = formData || {};
   product = product || {};
-  console.log("formData", formData);
-  console.log("product", product);
+  
   metalData = Array.isArray(metalData) ? metalData : [];
 
   const pricing = product.pricing || {};
@@ -139,7 +138,7 @@ export function pricedetails(
   let productDiscount = product.productDiscount || 0
 
   let makingDiscountType = making.discount?.type || "fixed";
-  let makingDiscount = making.discount?.value || 0;
+  let makingDiscount = num(making.discount?.value) || 0;
 
   let afterDiscountMakingCharge = 0;
 

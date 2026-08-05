@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import BreadCrumbs from "../../../components/breadcrumbs";
-import ProductClient from "../../../components/product-page/product-client";
+import ProductRouter from "../../../components/product-page/ProductRouter";
 import SEO from "../../../components/SEO/SEO";
 
 import { getProductById } from "../../../lib/api";
 
-export default function ProductPage() {
+export default function TestProductPage() {
   const [product, setProduct] = useState(null);
+  console.log("test Page");
 
   const { id } = useParams();
 
@@ -21,7 +22,7 @@ export default function ProductPage() {
 
         setProduct(data);
 
-        console.log("Products on /jewellery/id", data);
+        console.log("Products on /test/id", data);
         console.log("Product:", data);
       } catch (error) {
         console.error("Failed to fetch product:", error);
@@ -36,7 +37,7 @@ export default function ProductPage() {
   }
 
   const productUrl =
-    `https://www.miashka.com/jewellery/${product._id}`;
+    `https://www.miashka.com/test/${product._id}`;
 
   return (
     <>
@@ -53,7 +54,7 @@ export default function ProductPage() {
         <BreadCrumbs forBreadCrumbs={product} />
       </div>
 
-      <ProductClient initialProduct={product} />
+      <ProductRouter initialProduct={product} />
     </>
   );
 }

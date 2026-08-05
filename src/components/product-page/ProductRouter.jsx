@@ -8,12 +8,44 @@ import { getMetalRates } from "../../lib/api";
 import { pricedetails } from "../../utils/functions";
 import { handleAddToCart } from "../../utils/cart-functions";
 
-import ProductGallery from "./gallery/ProductGallery";
-import ProductInfo from "./info/ProductInfo";
-import ProductDetails from "./details/ProductDetails";
+import Jewellery from "./productTempletes/Jewellery";
+import Stone from "./productTempletes/Stone";
+import Bullion from "./productTempletes/Bullion";
+import Other from "./productTempletes/Other";
 
-export default function ProductClient({ initialProduct }) {
+const JEWELLERY_TYPES = [
+  "Ring",
+  "Pendant",
+  "Chain",
+  "Necklace",
+  "Bracelet",
+  "Bangle",
+  "Earrings",
+  "Mangalsutra",
+  "Nose Pin",
+  "Anklet",
+];
+
+const STONE_TYPES = [
+  "Loose Diamond",
+  "Gemstone",
+];
+
+const BULLION_TYPES = [
+  "Coin",
+  "Gold Coin",
+  "Silver Coin",
+  "Platinum Coin",
+];
+
+const OTHER_TYPES = [
+  "Other",
+];
+
+
+export default function ProductRouter({ initialProduct }) {
   const product = initialProduct;
+  console.log(product.productType);
 
   const { loggedIn, user } = useAuth();
 
@@ -96,48 +128,41 @@ export default function ProductClient({ initialProduct }) {
 
   /*
   ==========================
-  Layout
+  Common Props
   ==========================
   */
 
-  return (
-    <main className="bg-white">
+  const commonProps = {
+    product,
+    pricing,
+    formData,
+    setFormData,
+    loggedIn,
+    user,
+    onAddToCart: handleAddToCart,
+  };
 
-      {/* Hero */}
+  /*
+  ==========================
+  Render Template
+  ==========================
+  */
 
-      <section className="max-w-10xl mx-auto px-5 lg:px-8 py-12">
+  if (JEWELLERY_TYPES.includes(product.productType)) {
+    return <Jewellery {...commonProps} />;
+  }
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_0.8fr] gap-12 items-start">
+  if (STONE_TYPES.includes(product.productType)) {
+    return <Stone {...commonProps} />;
+  }
 
-          <ProductGallery
-            images={product.images}
-          />
+  if (BULLION_TYPES.includes(product.productType)) {
+    return <Bullion {...commonProps} />;
+  }
+  if (OTHER_TYPES.includes(product.productType)) {
+    return <Other {...commonProps} />;
+  }
 
-          <ProductInfo
-            product={product}
-            pricing={pricing}
-            formData={formData}
-            setFormData={setFormData}
-            loggedIn={loggedIn}
-            user={user}
-            onAddToCart={handleAddToCart}
-          />
-
-        </div>
-
-      </section>
-
-      {/* Details */}
-
-      <section className="border-t mx-10">
-
-        <ProductDetails
-          product={product}
-          pricing={pricing}
-        />
-
-      </section>
-
-    </main>
-  );
+  // Default Template
+  return <Jewellery {...commonProps} />;
 }

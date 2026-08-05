@@ -1,60 +1,58 @@
 "use client";
 
-import Description from "./Description";
-import SpecificationTable from "./SpecificationTable";
-import PriceBreakup from "./PriceBreakup";
-import ShippingReturns from "./ShippingReturns";
+import JewelleryDetails from "./jewellery/JewelleryDetails";
+import StoneDetails from "./stone/StoneDetails";
+import BullionDetails from "./bullion/BullionDetails";
+import OtherDetails from "./other/OtherDetails";
 
-export default function ProductDetails({
-  product,
-  pricing,
-}) {
-  return (
-    <section className="mt-20">
+const JEWELLERY_TYPES = [
+  "Ring",
+  "Pendant",
+  "Chain",
+  "Necklace",
+  "Bracelet",
+  "Bangle",
+  "Earrings",
+  "Mangalsutra",
+  "Nose Pin",
+  "Anklet",
+];
 
-      {/* Header */}
-      <div className="mb-12">
+const STONE_TYPES = [
+  "Loose Diamond",
+  "Gemstone",
+];
 
-        <p className="uppercase tracking-[5px] text-xl md:text-2xl lg:text-3xl text-neutral-500 mb-2">
-          Product Information
-        </p>
+const BULLION_TYPES = [
+  "Coin",
+  "Gold Coin",
+  "Silver Coin",
+  "Platinum Coin",
+];
 
-      </div>
+const OTHER_TYPES = [
+  "Other",
+];
 
-      {/* Layout */}
+export default function ProductDetails(props) {
+  const type = props.product?.productType;
+  console.log(type);
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+  if (JEWELLERY_TYPES.includes(type)) {
+    return <JewelleryDetails {...props} />;
+  }
 
-        {/* Left */}
+  if (STONE_TYPES.includes(type)) {
+    return <StoneDetails {...props} />;
+  }
 
-        <div className="lg:col-span-2 space-y-6">
+  if (BULLION_TYPES.includes(type)) {
+    return <BullionDetails {...props} />;
+  }
 
-          <Description
-            description={product?.description}
-          />
+  if (OTHER_TYPES.includes(type)) {
+      return <OtherDetails {...props} />;
+  }
 
-          <SpecificationTable
-            product={product}
-            pricing={pricing}
-          />
-
-          <PriceBreakup
-            pricing={pricing}
-            product={product}
-          />
-
-        </div>
-
-        {/* Right */}
-
-        <div className="lg:col-span-1 lg:sticky lg:top-24">
-
-          <ShippingReturns />
-
-        </div>
-
-      </div>
-
-    </section>
-  );
+  return <JewelleryDetails {...props} />;
 }
