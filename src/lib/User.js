@@ -121,6 +121,7 @@ export async function signupUser({
     lastName,
     email,
     password,
+    termsandConditons,
     setShowSignup,
     setLoggedIn,
     setUser,
@@ -137,6 +138,7 @@ export async function signupUser({
                 lastName,
                 email,
                 password,
+                termsandConditons,
             }),
         });
 

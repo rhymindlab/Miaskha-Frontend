@@ -72,11 +72,36 @@ export default function MobileMenu({
       />
 
       <a
+        href="/gifting"
+        className="text-2xl text-gray-800"
+      >
+        Gifting
+      </a>
+      <a
+        href="/journals"
+        className="text-2xl text-gray-800"
+      >
+        Journals
+      </a>
+      <a
+        href="/about"
+        className="text-2xl text-gray-800"
+      >
+        About
+      </a>
+      <a
+        href="/contact"
+        className="text-2xl text-gray-800"
+      >
+        Contact
+      </a>
+      <a
         href="/cart"
         className="text-2xl text-gray-800"
       >
         Cart
       </a>
+
 
     </nav>
 

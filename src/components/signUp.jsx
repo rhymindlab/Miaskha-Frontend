@@ -26,11 +26,11 @@ export default function Signup({
     email: "",
     password: "",
     confirmPassword: "",
+    termsandCondtions: false,
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [acceptTerms, setAcceptTerms] = useState(false);
   const [loading, setLoading] = useState(false);
 
   if (!showSignup) return null;
@@ -53,7 +53,7 @@ export default function Signup({
       return;
     }
 
-    if (!acceptTerms) {
+    if (!formData.termsandCondtions) {
       alert("Please accept Terms & Conditions.");
       return;
     }
@@ -62,6 +62,7 @@ export default function Signup({
       alert("Passwords do not match.");
       return;
     }
+    
 
     try {
       setLoading(true);
@@ -71,6 +72,7 @@ export default function Signup({
         lastName: formData.lastName,
         email: formData.email,
         password: formData.password,
+        termsandCondtions: formData.termsandCondtions,
         setLoggedIn,
         setUser,
         setShowSignup,
@@ -241,8 +243,13 @@ export default function Signup({
 
             <input
               type="checkbox"
-              checked={acceptTerms}
-              onChange={() => setAcceptTerms((prev) => !prev)}
+              checked={formData.termsandCondtions}
+              onChange={(e) => 
+                setFormData({
+                  ...formData,
+                  termsandCondtions: e.target.checked,
+                })
+              }
               className="mt-1"
             />
 

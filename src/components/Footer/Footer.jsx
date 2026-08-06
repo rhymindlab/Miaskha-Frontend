@@ -67,7 +67,7 @@ export default function Footer() {
 
             <ul className="space-y-3 text-gray-600">
               <li><Link to="/about">Our Story</Link></li>
-              <li><Link to="/blogs">Blogs</Link></li>
+              <li><Link to="/journals">Journals</Link></li>
               <li><Link to="/contact">Contact</Link></li>
             </ul>
           </div>

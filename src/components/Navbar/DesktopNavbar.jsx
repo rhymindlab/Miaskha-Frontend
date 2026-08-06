@@ -25,7 +25,7 @@ export default function DesktopNavbar({
 
           <a href="/jewellery">GIFTING</a>
 
-          <a href="/journal">JOURNAL</a>
+          <a href="/journals">JOURNALS</a>
 
           <a href="/about">ABOUT</a>
 

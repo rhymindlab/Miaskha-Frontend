@@ -1,24 +1,41 @@
-import { useEffect, useState } from "react";
-import { getFilteredProducts } from "../../../lib/api";
+import { useEffect, useMemo, useState } from "react";
+import { fetchAllProductsCategoryCollectionsMetalRates, getFilteredProducts } from "../../../lib/api";
+import { pricedetails } from "../../../utils/functions";
 
 export default function SignatureProducts() {
   const [products, setProducts] = useState([]);
+    const [formData, setFormData] = useState({});
+  const [metalData, setMetalData] = useState([]);
+  console.count("SignatureProducts Render");
 
+
+  
+  
+  
   useEffect(() => {
-    async function fetchProducts() {
+    async function loadData() {
       try {
+        const {metalRates} = await fetchAllProductsCategoryCollectionsMetalRates();    
         const data = await getFilteredProducts({limit:8});
         console.log(data);
-
+        
         // Show only first 8 products
+        console.log("Setting metal data");
+        setMetalData(metalRates);
         setProducts((data.products || []).slice(0, 8));
       } catch (err) {
         console.log(err);
       }
     }
 
-    fetchProducts();
+    loadData();
   }, []);
+  
+  console.log(metalData);
+  console.log(products);
+
+
+  
 
   return (
     <section className="py-24 bg-white">
@@ -47,74 +64,86 @@ export default function SignatureProducts() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
 
-          {products.map((product) => (
+          {products.map((product) => {
+            const pricing = pricedetails(
+              {
+                Material: product.metalType,
+                "Gold Purity": product.purity,
+              },
+              metalData,
+              product
+            ); 
 
-            <a
-              href={`/jewellery/${product._id}`}
-              key={product._id}
-              className="group"
-            >
+            const {afterDiscountSubTotal} = pricing;
+            return(
 
-              <div className="bg-[#FAFAFA] rounded-3xl overflow-hidden border border-gray-100">
+              <a
+                href={`/jewellery/${product._id}`}
+                key={product._id}
+                className="group"
+              >
 
-                {/* Image */}
+                <div className="bg-[#FAFAFA] rounded-3xl overflow-hidden border border-gray-100">
 
-                <div className="aspect-square overflow-hidden">
+                  {/* Image */}
 
-                  <img
-                    src={product.images?.[0]}
-                    alt={product.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                  />
+                  <div className="aspect-square overflow-hidden">
+
+                    <img
+                      src={product.images?.[0]}
+                      alt={product.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                    />
+
+                  </div>
+
+                  {/* Content */}
+
+                  <div className="p-6">
+
+                    <p className="text-xs uppercase tracking-[3px] text-[#C8A75B]">
+
+                      {product.metalType} • {product.purity}
+
+                    </p>
+
+                    <h3 className="mt-3 text-xl font-serif line-clamp-2 min-h-[60px]">
+
+                      {product.title}
+
+                    </h3>
+
+                    <p className="mt-4 text-2xl font-semibold">
+
+                      ₹
+                      {Number(afterDiscountSubTotal).toLocaleString("en-IN")}
+
+                    </p>
+
+                    <button
+                      className="
+                      mt-6
+                      w-full
+                      border
+                      border-black
+                      rounded-full
+                      py-3
+                      hover:bg-black
+                      hover:text-white
+                      transition
+                      "
+                    >
+                      View Details
+                    </button>
+
+                  </div>
 
                 </div>
 
-                {/* Content */}
+              </a>
 
-                <div className="p-6">
-
-                  <p className="text-xs uppercase tracking-[3px] text-[#C8A75B]">
-
-                    {product.metalType} • {product.purity}
-
-                  </p>
-
-                  <h3 className="mt-3 text-xl font-serif line-clamp-2 min-h-[60px]">
-
-                    {product.title}
-
-                  </h3>
-
-                  <p className="mt-4 text-2xl font-semibold">
-
-                    ₹
-                    {Number(product.salePrice).toLocaleString("en-IN")}
-
-                  </p>
-
-                  <button
-                    className="
-                    mt-6
-                    w-full
-                    border
-                    border-black
-                    rounded-full
-                    py-3
-                    hover:bg-black
-                    hover:text-white
-                    transition
-                    "
-                  >
-                    View Details
-                  </button>
-
-                </div>
-
-              </div>
-
-            </a>
-
-          ))}
+            );
+          })}
 
         </div>
 

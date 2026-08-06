@@ -11,6 +11,10 @@ import CollectionPage from './app/collections/page';
 import Cart from './app/cart/page';
 import CollectionSlug from './app/collections/[slug]/page';
 import CategoryPage from './app/Jewellery/category/page';
+import About  from './app/About/page';
+import Journal  from './app/Journal/page';
+import Contact  from './app/Contact/page';
+import Gifting from './app/Gifting/page';
 // import CategorySlug from './app/Jewellery/category/[slug]/page';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -39,6 +43,10 @@ function App() {
         <Route path="/Jewellery" element={<JewelleryPage />} />
         <Route path="/Jewellery/:id" element={<ProductPage />} />
         <Route path="/Jewellery/category" element={<CategoryPage />} />
+        <Route path="/gifting" element={<Gifting />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/journals" element={<Journal />} />
         {/* <Route path="/Jewellery/category/:slug" element={<CategorySlug />} /> */}
         <Route path="/Account" element={<ProtectedRoute><Account /></ProtectedRoute>}/>
       </Routes>

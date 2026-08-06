@@ -37,9 +37,9 @@ export default function Filters({
         <>
             <div className="flex border border-black lg:hidden w-full">
 
-                <button className="flex-1 py-2">
+                {/* <button className="flex-1 py-2">
                     Sort
-                </button>
+                </button> */}
 
                 <button
                     className="flex-1 py-2"

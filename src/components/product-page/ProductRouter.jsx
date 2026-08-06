@@ -45,7 +45,6 @@ const OTHER_TYPES = [
 
 export default function ProductRouter({ initialProduct }) {
   const product = initialProduct;
-  console.log(product.productType);
 
   const { loggedIn, user } = useAuth();
 

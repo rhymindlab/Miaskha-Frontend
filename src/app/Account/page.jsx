@@ -52,7 +52,7 @@ export default function Account() {
         },
     ];
 
-    const { user, setUser } = useAuth();
+    const { user, setUser, setLoggedIn } = useAuth();
 
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [tab, setTab] = useState(location.state?.tab || accountInfo[0]);
@@ -67,8 +67,9 @@ export default function Account() {
         const success = await logoutUser();
 
         if (!success) return;
-
+        
         setUser(null);
+        setLoggedIn(false)
 
         localStorage.removeItem("cart");
 
