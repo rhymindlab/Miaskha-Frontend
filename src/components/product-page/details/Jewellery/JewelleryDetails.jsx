@@ -1,4 +1,5 @@
 "use client";
+//jewellerydetails page
 
 import Description from "./Description";
 import SpecificationTable from "./SpecificationTable";

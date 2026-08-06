@@ -138,7 +138,7 @@ export default function JewelleryInfo({
             Buy Now
           </button>
 
-          {/* <button
+          {/*  <button
             className="
               w-full
               rounded-full
