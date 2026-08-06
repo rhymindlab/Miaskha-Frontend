@@ -1,6 +1,6 @@
 "use client";
 
-import JewelleryDetails from "./jewellery/JewelleryDetails";
+import JewelleryDetails from "./Jewellery/JewelleryDetails";
 import StoneDetails from "./stone/StoneDetails";
 import BullionDetails from "./bullion/BullionDetails";
 import OtherDetails from "./other/OtherDetails";
